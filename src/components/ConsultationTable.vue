@@ -1,7 +1,8 @@
 <script setup>
+import { computed, ref } from 'vue'
 import AppIcon from './AppIcon.vue'
 
-defineProps({
+const props = defineProps({
   searchLabel: {
     type: String,
     required: true
@@ -33,6 +34,24 @@ defineProps({
 })
 
 const emit = defineEmits(['update:query', 'edit', 'delete'])
+const nameSortDirection = ref(null)
+
+const sortedRows = computed(() => {
+  if (!props.headers.some((header) => header.key === 'name')) {
+    return props.rows
+  }
+
+  const rows = [...props.rows]
+  rows.sort((left, right) => {
+    const result = left.name.localeCompare(right.name, 'pt-BR', { numeric: true, sensitivity: 'base' })
+    return nameSortDirection.value === 'desc' ? -result : result
+  })
+  return rows
+})
+
+const toggleNameSort = () => {
+  nameSortDirection.value = nameSortDirection.value === 'asc' ? 'desc' : 'asc'
+}
 </script>
 
 <template>
@@ -60,29 +79,34 @@ const emit = defineEmits(['update:query', 'edit', 'delete'])
           class="consultation-table__row consultation-table__row--head"
           :class="`consultation-table__row--${variant}`"
         >
-          <div class="consultation-table__cell consultation-table__cell--check">
-            <input type="checkbox" aria-label="Selecionar todos" />
-          </div>
           <div
             v-for="header in headers"
             :key="header.key"
             class="consultation-table__cell"
             :class="header.className"
           >
-            {{ header.label }}
+            <button
+              v-if="header.key === 'name'"
+              type="button"
+              class="consultation-table__sort-button"
+              @click="toggleNameSort"
+            >
+              <span>{{ header.label }}</span>
+              <span class="consultation-table__sort-indicator">
+                {{ nameSortDirection === 'desc' ? 'Z-A' : 'A-Z' }}
+              </span>
+            </button>
+            <span v-else>{{ header.label }}</span>
           </div>
           <div class="consultation-table__cell consultation-table__cell--actions"></div>
         </div>
 
         <div
-          v-for="row in rows"
+          v-for="row in sortedRows"
           :key="row.id"
           class="consultation-table__row"
           :class="`consultation-table__row--${variant}`"
         >
-          <div class="consultation-table__cell consultation-table__cell--check">
-            <input type="checkbox" :aria-label="`Selecionar ${row.name}`" />
-          </div>
           <div
             v-for="header in headers"
             :key="`${row.id}-${header.key}`"

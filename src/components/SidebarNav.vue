@@ -12,7 +12,7 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['navigate'])
+const emit = defineEmits(['navigate', 'logout'])
 
 const isGroupActive = (item, currentScreen) =>
   item.children?.some((child) => child.screen === currentScreen)
@@ -25,10 +25,9 @@ const isGroupActive = (item, currentScreen) =>
         <div class="brand-card__mark">
           <AppIcon name="church" />
         </div>
-        <div>
+        <div class="brand-card__text">
           <strong>Comunidade</strong>
           <strong>São Pedro Chanel</strong>
-          <span>Dízimo</span>
         </div>
       </div>
 
@@ -73,7 +72,7 @@ const isGroupActive = (item, currentScreen) =>
       </nav>
     </div>
 
-    <button type="button" class="nav-item nav-item--logout">
+    <button type="button" class="nav-item nav-item--logout" @click="emit('logout')">
       <AppIcon name="logout" />
       <span>Sair</span>
     </button>

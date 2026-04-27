@@ -96,13 +96,13 @@ export const contributorFormMock = {
 }
 
 export const consultationUserRows = [
-  { id: 1, name: 'Nome 1', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Usuário' },
-  { id: 2, name: 'Nome 2', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Usuário' },
-  { id: 3, name: 'Nome 3', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Usuário' },
+  { id: 1, name: 'Nome 1', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Secretaria' },
+  { id: 2, name: 'Nome 2', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Secretaria' },
+  { id: 3, name: 'Nome 3', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Secretaria' },
   { id: 4, name: 'Nome 4', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Administrador' },
   { id: 5, name: 'Nome 5', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Administrador' },
-  { id: 6, name: 'Nome 6', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Usuário' },
-  { id: 7, name: 'Nome 7', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Usuário' }
+  { id: 6, name: 'Nome 6', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Secretaria' },
+  { id: 7, name: 'Nome 7', phone: '(69) 00000-0000', birthDate: '00/00/0000', accessLevel: 'Secretaria' }
 ]
 
 export const consultationContributorRows = [
@@ -122,10 +122,11 @@ export const consultationContributorRows = [
 ]
 
 export const financeIncomeFormMock = {
-  category: '',
-  description: '',
+  contributor: '',
+  contributionType: '',
   amount: '',
-  date: ''
+  paymentMethod: '',
+  paymentDate: ''
 }
 
 export const financeExpenseFormMock = {
@@ -142,8 +143,6 @@ export const reportFormMock = {
 }
 
 export const financeCategoryOptions = [
-  'Dízimos',
-  'Oferta',
   'Água e Energia',
   'Limpeza e Higiene',
   'Material de Escritório',
@@ -151,18 +150,28 @@ export const financeCategoryOptions = [
   'Alimentação'
 ]
 
+export const contributionTypeOptions = [
+  'Dízimo',
+  'Contribuição voluntária'
+]
+
+export const paymentMethodOptions = [
+  'Dinheiro',
+  'Pix',
+  'Cartão'
+]
+
 export const reportTypeOptions = [
-  'Arrecadação mensal',
-  'Pagamentos',
-  'Contribuintes ativos',
-  'Resumo financeiro'
+  'Aniversariantes',
+  'Contribuições',
+  'Despesas'
 ]
 
 export const financeIncomeRows = [
-  { id: 1, category: 'Dízimos', description: 'Contribuições de domingo', paymentDate: '00/00/0000', amount: 'R$ 220,00' },
-  { id: 2, category: 'Oferta', description: 'Campanha solidária', paymentDate: '00/00/0000', amount: 'R$ 150,00' },
-  { id: 3, category: 'Dízimos', description: 'Depósito semanal', paymentDate: '00/00/0000', amount: 'R$ 320,00' },
-  { id: 4, category: 'Oferta', description: 'Evento especial', paymentDate: '00/00/0000', amount: 'R$ 180,00' }
+  { id: 1, category: 'Dízimo', description: 'Contribuições de domingo', paymentDate: '00/00/0000', amount: 'R$ 220,00' },
+  { id: 2, category: 'Contribuição voluntária', description: 'Campanha solidária', paymentDate: '00/00/0000', amount: 'R$ 150,00' },
+  { id: 3, category: 'Dízimo', description: 'Depósito semanal', paymentDate: '00/00/0000', amount: 'R$ 320,00' },
+  { id: 4, category: 'Contribuição voluntária', description: 'Evento especial', paymentDate: '00/00/0000', amount: 'R$ 180,00' }
 ]
 
 export const financeExpenseRows = [

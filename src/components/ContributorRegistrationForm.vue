@@ -19,7 +19,12 @@ const emit = defineEmits(['save', 'cancel'])
         <FormField v-model="form.fullName" label="Nome completo" placeholder="Nome" class="field-span-2" />
         <FormField v-model="form.address" label="Endereço" placeholder="Ex: Rua JK, n°..." class="field-span-2" />
         <FormField v-model="form.phone" label="Telefone" placeholder="(69)9 9999-9999" />
-        <FormField v-model="form.birthDate" label="Data de nascimento" placeholder="01/01/2001" />
+        <FormField
+          v-model="form.birthDate"
+          label="Data de nascimento"
+          placeholder="dd/mm/aaaa"
+          type="date"
+        />
         <FormField v-model="form.profession" label="Profissão" placeholder="Profissão ou ocupação" />
 
         <label class="marriage-toggle">
@@ -38,7 +43,8 @@ const emit = defineEmits(['save', 'cancel'])
           <FormField
             v-model="form.spouseBirthDate"
             label="Nascimento do cônjuge"
-            placeholder="01/01/2001"
+            placeholder="dd/mm/aaaa"
+            type="date"
           />
         </template>
       </div>

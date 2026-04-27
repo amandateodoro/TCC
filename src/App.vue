@@ -5,6 +5,7 @@ import BirthdaysCard from './components/BirthdaysCard.vue'
 import ConsultationTable from './components/ConsultationTable.vue'
 import ContributorRegistrationForm from './components/ContributorRegistrationForm.vue'
 import FinancePanel from './components/FinancePanel.vue'
+import LoginScreen from './components/LoginScreen.vue'
 import ReportPanel from './components/ReportPanel.vue'
 import SidebarNav from './components/SidebarNav.vue'
 import StatCard from './components/StatCard.vue'
@@ -12,6 +13,7 @@ import TopBar from './components/TopBar.vue'
 import UserRegistrationForm from './components/UserRegistrationForm.vue'
 import {
   birthdays,
+  contributionTypeOptions,
   financeCategoryOptions,
   financeExpenseFormMock,
   financeExpenseRows,
@@ -21,6 +23,7 @@ import {
   consultationUserRows,
   contributorFormMock,
   navigationItems,
+  paymentMethodOptions,
   quickActions,
   reportFormMock,
   reportTypeOptions,
@@ -29,12 +32,23 @@ import {
 } from './mock/appData.js'
 
 const currentScreen = ref('dashboard')
+const isAuthenticated = ref(false)
+const authView = ref('login')
+
+const loginForm = reactive({
+  username: '',
+  password: '',
+  email: ''
+})
+
 const userForm = reactive({ ...userFormMock })
 const contributorForm = reactive({ ...contributorFormMock })
 const financeIncomeForm = reactive({ ...financeIncomeFormMock })
 const financeExpenseForm = reactive({ ...financeExpenseFormMock })
 const reportForm = reactive({ ...reportFormMock })
+
 const feedback = ref('')
+const loginFeedback = ref('')
 const userSearch = ref('')
 const contributorSearch = ref('')
 
@@ -65,6 +79,47 @@ const filteredContributorRows = computed(() =>
 
 const setScreen = (screen) => {
   currentScreen.value = screen
+  feedback.value = ''
+}
+
+const login = () => {
+  if (!loginForm.username.trim() || !loginForm.password.trim()) {
+    loginFeedback.value = 'Preencha usuário e senha para continuar.'
+    return
+  }
+
+  loginFeedback.value = ''
+  isAuthenticated.value = true
+  authView.value = 'login'
+  currentScreen.value = 'dashboard'
+}
+
+const openResetPassword = () => {
+  authView.value = 'reset'
+  loginFeedback.value = ''
+}
+
+const backToLogin = () => {
+  authView.value = 'login'
+  loginFeedback.value = ''
+}
+
+const sendResetLink = () => {
+  if (!loginForm.email.trim()) {
+    loginFeedback.value = 'Informe seu e-mail para continuar.'
+    return
+  }
+
+  loginFeedback.value = 'Link de recuperação enviado com sucesso.'
+}
+
+const logout = () => {
+  isAuthenticated.value = false
+  authView.value = 'login'
+  loginForm.username = ''
+  loginForm.password = ''
+  loginForm.email = ''
+  loginFeedback.value = ''
   feedback.value = ''
 }
 
@@ -120,11 +175,25 @@ const generateReport = () => {
 </script>
 
 <template>
-  <div class="app-shell">
+  <LoginScreen
+    v-if="!isAuthenticated"
+    :mode="authView"
+    v-model:username="loginForm.username"
+    v-model:password="loginForm.password"
+    v-model:email="loginForm.email"
+    :feedback="loginFeedback"
+    @login="login"
+    @forgot="openResetPassword"
+    @back="backToLogin"
+    @reset="sendResetLink"
+  />
+
+  <div v-else class="app-shell">
     <SidebarNav
       :items="navigationItems"
       :current-screen="currentScreen"
       @navigate="setScreen"
+      @logout="logout"
     />
 
     <div class="app-content">
@@ -200,9 +269,12 @@ const generateReport = () => {
 
         <template v-else-if="currentScreen === 'finance-income'">
           <FinancePanel
+            variant="income"
             :form="financeIncomeForm"
             :rows="financeIncomeRows"
             :category-options="financeCategoryOptions"
+            :contribution-type-options="contributionTypeOptions"
+            :payment-method-options="paymentMethodOptions"
             action-label="Adicionar"
             table-title="Entradas de hoje:"
             total-label="TOTAL: R$ 870,00"
@@ -213,6 +285,7 @@ const generateReport = () => {
 
         <template v-else-if="currentScreen === 'finance-expense'">
           <FinancePanel
+            variant="expense"
             :form="financeExpenseForm"
             :rows="financeExpenseRows"
             :category-options="financeCategoryOptions"
