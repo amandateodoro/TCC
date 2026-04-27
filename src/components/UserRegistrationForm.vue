@@ -20,7 +20,13 @@ const accessOptions = ['Administrador', 'Secretaria']
       <div class="form-grid form-grid--user">
         <FormField v-model="form.fullName" label="Nome completo" placeholder="Nome" class="field-span-2" />
         <FormField v-model="form.username" label="Nome de usuário" placeholder="usu123" />
-        <FormField v-model="form.password" label="Senha" placeholder="*******" type="password" />
+        <FormField
+          v-model="form.password"
+          label="Senha"
+          placeholder="*******"
+          type="password"
+          :toggle-password="true"
+        />
         <FormField v-model="form.email" label="E-mail" placeholder="usuario@gmail.com" />
         <FormField
           v-model="form.accessLevel"
