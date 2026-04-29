@@ -4,11 +4,11 @@ import AppIcon from './AppIcon.vue'
 defineProps({
   saveLabel: {
     type: String,
-    default: 'SALVAR'
+    default: 'Salvar'
   },
   cancelLabel: {
     type: String,
-    default: 'CANCELAR'
+    default: 'Cancelar'
   }
 })
 

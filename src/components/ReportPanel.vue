@@ -22,21 +22,21 @@ const emit = defineEmits(['generate'])
       <div class="report-grid">
         <FormField
           v-model="form.type"
-          label=""
-          placeholder="Tipo de Relatório"
+          label="Tipo de relatório"
+          placeholder="Selecione o tipo"
           as="select"
           :options="reportTypeOptions"
         />
         <FormField
           v-model="form.startDate"
-          label=""
-          placeholder="Início"
+          label="Início"
+          placeholder="dd/mm/aaaa"
           type="date"
         />
         <FormField
           v-model="form.endDate"
-          label=""
-          placeholder="Fim"
+          label="Fim"
+          placeholder="dd/mm/aaaa"
           type="date"
         />
       </div>

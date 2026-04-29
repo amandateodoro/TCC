@@ -6,11 +6,7 @@ export const navigationItems = [
     icon: 'userPlus',
     children: [
       { id: 'cadastro-usuario', label: 'Usuário', screen: 'user-registration' },
-      {
-        id: 'cadastro-contribuinte',
-        label: 'Contribuinte',
-        screen: 'contributor-registration'
-      }
+      { id: 'cadastro-contribuinte', label: 'Contribuinte', screen: 'contributor-registration' }
     ]
   },
   {
@@ -19,11 +15,7 @@ export const navigationItems = [
     icon: 'edit',
     children: [
       { id: 'consulta-usuario', label: 'Usuários', screen: 'user-consultation' },
-      {
-        id: 'consulta-contribuinte',
-        label: 'Contribuinte',
-        screen: 'contributor-consultation'
-      }
+      { id: 'consulta-contribuinte', label: 'Contribuinte', screen: 'contributor-consultation' }
     ]
   },
   {
@@ -31,8 +23,9 @@ export const navigationItems = [
     label: 'Financeiro',
     icon: 'money',
     children: [
-      { id: 'financeiro-entradas', label: 'Entradas', screen: 'finance-income' },
-      { id: 'financeiro-saidas', label: 'Saídas', screen: 'finance-expense' }
+      { id: 'financeiro-contribuicoes', label: 'Contribuições', screen: 'finance-contribution' },
+      { id: 'financeiro-oferta', label: 'Oferta', screen: 'finance-offering' },
+      { id: 'financeiro-despesas', label: 'Despesas', screen: 'finance-expense' }
     ]
   },
   { id: 'relatorio', label: 'Relatório', icon: 'report', screen: 'relatorio' }
@@ -47,7 +40,7 @@ export const quickActions = [
   {
     id: 'contribuicao',
     label: 'Registrar Contribuição',
-    targetScreen: 'finance-income'
+    targetScreen: 'finance-contribution'
   }
 ]
 
@@ -118,20 +111,28 @@ export const consultationContributorRows = [
   { id: 10, name: 'Nome 10', phone: '(69) 00000-0000', birthDate: '00/00/0000' },
   { id: 11, name: 'Nome 11', phone: '(69) 00000-0000', birthDate: '00/00/0000' },
   { id: 12, name: 'Nome 12', phone: '(69) 00000-0000', birthDate: '00/00/0000' },
-  { id: 13, name: 'Nome 7', phone: '(69) 00000-0000', birthDate: '00/00/0000' }
+  { id: 13, name: 'Nome 13', phone: '(69) 00000-0000', birthDate: '00/00/0000' }
 ]
 
-export const financeIncomeFormMock = {
+export const financeContributionFormMock = {
   contributor: '',
   contributionType: '',
   amount: '',
   paymentMethod: '',
-  paymentDate: ''
+  paymentDate: '',
+  observation: ''
+}
+
+export const financeOfferingFormMock = {
+  totalAmount: '',
+  celebrationType: '',
+  date: '',
+  observation: ''
 }
 
 export const financeExpenseFormMock = {
   category: '',
-  description: '',
+  observation: '',
   amount: '',
   date: ''
 }
@@ -155,6 +156,13 @@ export const contributionTypeOptions = [
   'Contribuição voluntária'
 ]
 
+export const celebrationTypeOptions = [
+  'Santa Missa',
+  'Celebração dominical',
+  'Celebração especial',
+  'Novena'
+]
+
 export const paymentMethodOptions = [
   'Dinheiro',
   'Pix',
@@ -167,60 +175,66 @@ export const reportTypeOptions = [
   'Despesas'
 ]
 
-export const financeIncomeRows = [
-  { id: 1, category: 'Dízimo', description: 'Contribuições de domingo', paymentDate: '00/00/0000', amount: 'R$ 220,00' },
-  { id: 2, category: 'Contribuição voluntária', description: 'Campanha solidária', paymentDate: '00/00/0000', amount: 'R$ 150,00' },
-  { id: 3, category: 'Dízimo', description: 'Depósito semanal', paymentDate: '00/00/0000', amount: 'R$ 320,00' },
-  { id: 4, category: 'Contribuição voluntária', description: 'Evento especial', paymentDate: '00/00/0000', amount: 'R$ 180,00' }
+export const financeContributionRows = [
+  { id: 1, category: 'Dízimo', observation: 'Contribuições de domingo', paymentDate: '00/00/0000', amount: 'R$ 220,00' },
+  { id: 2, category: 'Contribuição voluntária', observation: 'Campanha solidária', paymentDate: '00/00/0000', amount: 'R$ 150,00' },
+  { id: 3, category: 'Dízimo', observation: 'Depósito semanal', paymentDate: '00/00/0000', amount: 'R$ 320,00' },
+  { id: 4, category: 'Contribuição voluntária', observation: 'Evento especial', paymentDate: '00/00/0000', amount: 'R$ 180,00' }
+]
+
+export const financeOfferingRows = [
+  { id: 1, category: 'Santa Missa', observation: 'Oferta da celebração da manhã', paymentDate: '00/00/0000', amount: 'R$ 420,00' },
+  { id: 2, category: 'Celebração dominical', observation: 'Oferta da noite', paymentDate: '00/00/0000', amount: 'R$ 380,00' },
+  { id: 3, category: 'Novena', observation: 'Oferta especial dos fiéis', paymentDate: '00/00/0000', amount: 'R$ 210,00' }
 ]
 
 export const financeExpenseRows = [
   {
     id: 1,
     category: 'Água e Energia',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+    observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
     paymentDate: '00/00/0000',
     amount: 'R$ 10,00'
   },
   {
     id: 2,
     category: 'Limpeza e Higiene',
-    description: 'Duis aute irure dolor in reprehend',
+    observation: 'Duis aute irure dolor in reprehenderit',
     paymentDate: '00/00/0000',
     amount: 'R$ 10,00'
   },
   {
     id: 3,
     category: 'Limpeza e Higiene',
-    description: 'Duis aute irure dolor in reprehend',
+    observation: 'Duis aute irure dolor in reprehenderit',
     paymentDate: '00/00/0000',
     amount: 'R$ 10,00'
   },
   {
     id: 4,
     category: 'Material de Escritório',
-    description: 'Phasellus eu massa a neque dignissim tincidunt at sed ligula',
+    observation: 'Phasellus eu massa a neque dignissim tincidunt at sed ligula',
     paymentDate: '00/00/0000',
     amount: 'R$ 10,00'
   },
   {
     id: 5,
     category: 'Manutenção',
-    description: 'Morbi nec dui ut sapien cursus convallis.',
+    observation: 'Morbi nec dui ut sapien cursus convallis.',
     paymentDate: '00/00/0000',
     amount: 'R$ 10,00'
   },
   {
     id: 6,
     category: 'Alimentação',
-    description: 'Integer at ipsum at purus luctus iaculis',
+    observation: 'Integer at ipsum at purus luctus iaculis',
     paymentDate: '00/00/0000',
     amount: 'R$ 10,00'
   },
   {
     id: 7,
     category: 'Manutenção',
-    description: 'Morbi nec dui ut sapien cursus convallis.',
+    observation: 'Morbi nec dui ut sapien cursus convallis.',
     paymentDate: '00/00/0000',
     amount: 'R$ 10,00'
   }

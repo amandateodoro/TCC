@@ -6,6 +6,7 @@ import ConsultationTable from './components/ConsultationTable.vue'
 import ContributorRegistrationForm from './components/ContributorRegistrationForm.vue'
 import FinancePanel from './components/FinancePanel.vue'
 import LoginScreen from './components/LoginScreen.vue'
+import ProfilePanel from './components/ProfilePanel.vue'
 import ReportPanel from './components/ReportPanel.vue'
 import SidebarNav from './components/SidebarNav.vue'
 import StatCard from './components/StatCard.vue'
@@ -13,15 +14,18 @@ import TopBar from './components/TopBar.vue'
 import UserRegistrationForm from './components/UserRegistrationForm.vue'
 import {
   birthdays,
+  celebrationTypeOptions,
   contributionTypeOptions,
-  financeCategoryOptions,
-  financeExpenseFormMock,
-  financeExpenseRows,
-  financeIncomeFormMock,
-  financeIncomeRows,
   consultationContributorRows,
   consultationUserRows,
   contributorFormMock,
+  financeCategoryOptions,
+  financeContributionFormMock,
+  financeContributionRows,
+  financeExpenseFormMock,
+  financeExpenseRows,
+  financeOfferingFormMock,
+  financeOfferingRows,
   navigationItems,
   paymentMethodOptions,
   quickActions,
@@ -42,8 +46,16 @@ const loginForm = reactive({
 })
 
 const userForm = reactive({ ...userFormMock })
+const profileForm = reactive({
+  fullName: 'Amanda Souza',
+  username: 'amanda.souza',
+  email: 'amanda@gmail.com',
+  phone: '(69)9 9999-9999',
+  accessLevel: 'Secretaria'
+})
 const contributorForm = reactive({ ...contributorFormMock })
-const financeIncomeForm = reactive({ ...financeIncomeFormMock })
+const financeContributionForm = reactive({ ...financeContributionFormMock })
+const financeOfferingForm = reactive({ ...financeOfferingFormMock })
 const financeExpenseForm = reactive({ ...financeExpenseFormMock })
 const reportForm = reactive({ ...reportFormMock })
 
@@ -79,6 +91,11 @@ const filteredContributorRows = computed(() =>
 
 const setScreen = (screen) => {
   currentScreen.value = screen
+  feedback.value = ''
+}
+
+const openProfile = () => {
+  currentScreen.value = 'profile'
   feedback.value = ''
 }
 
@@ -134,6 +151,21 @@ const saveScreen = (screen) => {
       : 'Contribuinte mockado salvo com sucesso.'
 }
 
+const saveProfile = () => {
+  feedback.value = 'Perfil mockado salvo com sucesso.'
+}
+
+const cancelProfile = () => {
+  Object.assign(profileForm, {
+    fullName: 'Amanda Souza',
+    username: 'amanda.souza',
+    email: 'amanda@gmail.com',
+    phone: '(69)9 9999-9999',
+    accessLevel: 'Secretaria'
+  })
+  feedback.value = 'Perfil restaurado.'
+}
+
 const cancelScreen = (screen) => {
   if (screen === 'user-registration') {
     resetForm(userForm, userFormMock)
@@ -153,15 +185,24 @@ const deleteRow = (row) => {
 }
 
 const saveFinance = (screen) => {
-  feedback.value =
-    screen === 'finance-income'
-      ? 'Entrada mockada adicionada com sucesso.'
-      : 'Saída mockada adicionada com sucesso.'
+  if (screen === 'finance-contribution') {
+    feedback.value = 'Contribuição mockada adicionada com sucesso.'
+    return
+  }
+
+  if (screen === 'finance-offering') {
+    feedback.value = 'Oferta mockada adicionada com sucesso.'
+    return
+  }
+
+  feedback.value = 'Despesa mockada adicionada com sucesso.'
 }
 
 const cancelFinance = (screen) => {
-  if (screen === 'finance-income') {
-    resetForm(financeIncomeForm, financeIncomeFormMock)
+  if (screen === 'finance-contribution') {
+    resetForm(financeContributionForm, financeContributionFormMock)
+  } else if (screen === 'finance-offering') {
+    resetForm(financeOfferingForm, financeOfferingFormMock)
   } else {
     resetForm(financeExpenseForm, financeExpenseFormMock)
   }
@@ -197,7 +238,7 @@ const generateReport = () => {
     />
 
     <div class="app-content">
-      <TopBar />
+      <TopBar @open-profile="openProfile" />
 
       <main class="dashboard-panel" :class="{ 'dashboard-panel--tight': currentScreen !== 'dashboard' }">
         <template v-if="currentScreen === 'dashboard'">
@@ -239,6 +280,14 @@ const generateReport = () => {
           />
         </template>
 
+        <template v-else-if="currentScreen === 'profile'">
+          <ProfilePanel
+            :form="profileForm"
+            @save="saveProfile"
+            @cancel="cancelProfile"
+          />
+        </template>
+
         <template v-else-if="currentScreen === 'user-consultation'">
           <ConsultationTable
             v-model:query="userSearch"
@@ -267,19 +316,32 @@ const generateReport = () => {
           />
         </template>
 
-        <template v-else-if="currentScreen === 'finance-income'">
+        <template v-else-if="currentScreen === 'finance-contribution'">
           <FinancePanel
-            variant="income"
-            :form="financeIncomeForm"
-            :rows="financeIncomeRows"
-            :category-options="financeCategoryOptions"
+            variant="contribution"
+            :form="financeContributionForm"
+            :rows="financeContributionRows"
             :contribution-type-options="contributionTypeOptions"
             :payment-method-options="paymentMethodOptions"
             action-label="Adicionar"
-            table-title="Entradas de hoje:"
+            table-title="Contribuições de hoje:"
             total-label="TOTAL: R$ 870,00"
-            @save="saveFinance('finance-income')"
-            @cancel="cancelFinance('finance-income')"
+            @save="saveFinance('finance-contribution')"
+            @cancel="cancelFinance('finance-contribution')"
+          />
+        </template>
+
+        <template v-else-if="currentScreen === 'finance-offering'">
+          <FinancePanel
+            variant="offering"
+            :form="financeOfferingForm"
+            :rows="financeOfferingRows"
+            :celebration-type-options="celebrationTypeOptions"
+            action-label="Adicionar"
+            table-title="Ofertas registradas:"
+            total-label="TOTAL: R$ 1.010,00"
+            @save="saveFinance('finance-offering')"
+            @cancel="cancelFinance('finance-offering')"
           />
         </template>
 
@@ -290,7 +352,7 @@ const generateReport = () => {
             :rows="financeExpenseRows"
             :category-options="financeCategoryOptions"
             action-label="Adicionar"
-            table-title="Pagamentos de hoje:"
+            table-title="Despesas de hoje:"
             total-label="TOTAL: R$ 000,00"
             @save="saveFinance('finance-expense')"
             @cancel="cancelFinance('finance-expense')"
