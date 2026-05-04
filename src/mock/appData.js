@@ -60,9 +60,9 @@ export const stats = [
 ]
 
 export const birthdays = [
-  { id: 1, name: 'Evelyn Isabel Souza', date: '15/05' },
+  { id: 1, name: 'Evelyn Isabel Teodoro', date: '15/05' },
   { id: 2, name: 'Milena Vanessa Marlene', date: '13/05' },
-  { id: 3, name: 'Osvaldo Julio Bryan Souza', date: '05/05' },
+  { id: 3, name: 'Osvaldo Julio Bryan Teodoro', date: '05/05' },
   { id: 4, name: 'Yasmin Vera Rocha', date: '20/05' },
   { id: 5, name: 'Lúcia Isabelle Moreira', date: '31/05' }
 ]

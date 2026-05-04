@@ -47,11 +47,11 @@ const loginForm = reactive({
 
 const userForm = reactive({ ...userFormMock })
 const profileForm = reactive({
-  fullName: 'Amanda Souza',
-  username: 'amanda.souza',
+  fullName: 'Amanda Teodoro',
+  username: 'amanda.teodoro',
   email: 'amanda@gmail.com',
   phone: '(69)9 9999-9999',
-  accessLevel: 'Secretaria'
+  accessLevel: 'Administrador'
 })
 const contributorForm = reactive({ ...contributorFormMock })
 const financeContributionForm = reactive({ ...financeContributionFormMock })
@@ -157,11 +157,11 @@ const saveProfile = () => {
 
 const cancelProfile = () => {
   Object.assign(profileForm, {
-    fullName: 'Amanda Souza',
-    username: 'amanda.souza',
+    fullName: 'Amanda Teodoro',
+    username: 'amanda.teodoro',
     email: 'amanda@gmail.com',
     phone: '(69)9 9999-9999',
-    accessLevel: 'Secretaria'
+    accessLevel: 'Administrador'
   })
   feedback.value = 'Perfil restaurado.'
 }
