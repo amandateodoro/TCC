@@ -1024,6 +1024,10 @@ button {
   grid-template-columns: minmax(150px, 1.2fr) minmax(140px, 1.2fr) minmax(120px, 1fr) minmax(110px, 0.8fr);
 }
 
+.consultation-table__row--finance-contribution {
+  grid-template-columns: minmax(160px, 1.3fr) minmax(120px, 0.95fr) minmax(125px, 1fr) minmax(210px, 1.45fr) minmax(120px, 1fr);
+}
+
 .consultation-table__row--head {
   min-height: 30px;
   border-top: 0;
@@ -1250,6 +1254,10 @@ button {
 
   .consultation-table__row--finance {
     grid-template-columns: minmax(140px, 1.1fr) minmax(130px, 1.2fr) minmax(110px, 0.95fr) minmax(90px, 0.75fr);
+  }
+
+  .consultation-table__row--finance-contribution {
+    grid-template-columns: minmax(145px, 1.2fr) minmax(110px, 0.9fr) minmax(115px, 0.95fr) minmax(180px, 1.3fr) minmax(110px, 0.95fr);
   }
 }
 

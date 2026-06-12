@@ -23,6 +23,10 @@ defineProps({
     type: Array,
     default: () => []
   },
+  contributorOptions: {
+    type: Array,
+    default: () => []
+  },
   paymentMethodOptions: {
     type: Array,
     default: () => []
@@ -57,6 +61,7 @@ const emit = defineEmits(['save', 'cancel'])
             v-model="form.contributor"
             label="Contribuinte"
             placeholder="Nome do contribuinte"
+            :list-options="contributorOptions"
             class="field-span-2"
           />
           <FormField
@@ -156,22 +161,30 @@ const emit = defineEmits(['save', 'cancel'])
       <p class="finance-table__title">{{ tableTitle }}</p>
 
       <div class="consultation-table finance-table">
-        <div class="consultation-table__row consultation-table__row--finance consultation-table__row--head">
+        <div
+          class="consultation-table__row consultation-table__row--finance consultation-table__row--head"
+          :class="`consultation-table__row--finance-${variant}`"
+        >
+          <div v-if="variant === 'contribution'" class="consultation-table__cell">Contribuinte</div>
+          <div v-if="variant === 'contribution'" class="consultation-table__cell">Valor</div>
           <div class="consultation-table__cell">Categoria</div>
           <div class="consultation-table__cell">Observação</div>
           <div class="consultation-table__cell">Data pagamento</div>
-          <div class="consultation-table__cell">Valor</div>
+          <div v-if="variant !== 'contribution'" class="consultation-table__cell">Valor</div>
         </div>
 
         <div
           v-for="row in rows"
           :key="row.id"
           class="consultation-table__row consultation-table__row--finance"
+          :class="`consultation-table__row--finance-${variant}`"
         >
+          <div v-if="variant === 'contribution'" class="consultation-table__cell">{{ row.contributor }}</div>
+          <div v-if="variant === 'contribution'" class="consultation-table__cell">{{ row.amount }}</div>
           <div class="consultation-table__cell">{{ row.category }}</div>
           <div class="consultation-table__cell">{{ row.observation }}</div>
           <div class="consultation-table__cell">{{ row.paymentDate }}</div>
-          <div class="consultation-table__cell">{{ row.amount }}</div>
+          <div v-if="variant !== 'contribution'" class="consultation-table__cell">{{ row.amount }}</div>
         </div>
       </div>
 

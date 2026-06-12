@@ -121,9 +121,15 @@ const consultationContributorRows = computed(() =>
   }))
 )
 
+const contributorNameOptions = computed(() =>
+  [...new Set(contributors.value.map((contributor) => contributor.nomeCompleto).filter(Boolean))]
+    .sort((first, second) => first.localeCompare(second, 'pt-BR'))
+)
+
 const financeContributionRows = computed(() =>
   contributions.value.map((contribution) => ({
     id: contribution.id,
+    contributor: contribution.contribuintes?.map((item) => item.nomeCompleto).join(', ') ?? '',
     category: contribution.tipoContribuicao,
     observation: contribution.observacao ?? contribution.contribuintes?.map((item) => item.nomeCompleto).join(', ') ?? '',
     paymentDate: formatDate(contribution.dataDePagamento),
@@ -386,8 +392,10 @@ const deleteRow = async (row) => {
 const saveFinance = async (screen) => {
   try {
     if (screen === 'finance-contribution') {
-      const contributor = contributors.value.find((item) =>
-        item.nomeCompleto.toLowerCase().includes(financeContributionForm.contributor.trim().toLowerCase())
+      const contributor = contributors.value.find(
+        (item) =>
+          item.nomeCompleto.trim().toLowerCase() ===
+          financeContributionForm.contributor.trim().toLowerCase()
       )
 
       if (!contributor) {
@@ -575,6 +583,7 @@ onMounted(() => {
             variant="contribution"
             :form="financeContributionForm"
             :rows="financeContributionRows"
+            :contributor-options="contributorNameOptions"
             :contribution-type-options="contributionTypeOptions"
             :payment-method-options="paymentMethodOptions"
             action-label="Adicionar"

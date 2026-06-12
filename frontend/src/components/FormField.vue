@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   label: {
@@ -26,6 +26,10 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  listOptions: {
+    type: Array,
+    default: () => []
+  },
   numericOnly: {
     type: Boolean,
     default: false
@@ -42,6 +46,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 const showPassword = ref(false)
+const listId = computed(() =>
+  props.listOptions.length
+    ? `field-list-${props.label.toLowerCase().replace(/[^a-z0-9]+/gi, '-')}`
+    : undefined
+)
 
 const formatCurrencyValue = (value) => {
   const digits = value.replace(/\D+/g, '')
@@ -104,15 +113,21 @@ const handleInput = (event) => {
       <span v-if="!modelValue" class="form-date-wrap__placeholder">{{ placeholder }}</span>
     </div>
 
-    <input
-      v-else-if="type !== 'password' || !togglePassword"
-      class="form-control"
-      :type="type"
-      :value="modelValue"
-      :placeholder="placeholder"
-      :inputmode="currencyMask ? 'decimal' : numericOnly ? 'numeric' : undefined"
-      @input="handleInput"
-    />
+    <template v-else-if="type !== 'password' || !togglePassword">
+      <input
+        class="form-control"
+        :type="type"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :list="listId"
+        :inputmode="currencyMask ? 'decimal' : numericOnly ? 'numeric' : undefined"
+        @input="handleInput"
+      />
+
+      <datalist v-if="listOptions.length" :id="listId">
+        <option v-for="option in listOptions" :key="option" :value="option" />
+      </datalist>
+    </template>
 
     <div v-else class="form-password-wrap">
       <input
