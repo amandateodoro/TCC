@@ -49,6 +49,10 @@ const props = defineProps({
   required: {
     type: Boolean,
     default: false
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -171,6 +175,7 @@ const selectComboboxOption = (option) => {
         :value="modelValue"
         :placeholder="placeholder"
         :required="required"
+        :disabled="disabled"
         @focus="openCombobox"
         @blur="closeCombobox"
         @input="handleInput"
@@ -211,6 +216,7 @@ const selectComboboxOption = (option) => {
         :class="{ 'form-control--empty': !modelValue }"
         :value="modelValue"
         :required="required"
+        :disabled="disabled"
         @change="emit('update:modelValue', $event.target.value)"
       >
         <option value="" disabled>{{ placeholder }}</option>
@@ -228,6 +234,7 @@ const selectComboboxOption = (option) => {
         :type="type"
         :value="modelValue"
         :required="required"
+        :disabled="disabled"
         @input="emit('update:modelValue', $event.target.value)"
       />
       <span v-if="!modelValue" class="form-date-wrap__placeholder">{{ placeholder }}</span>
@@ -240,6 +247,7 @@ const selectComboboxOption = (option) => {
         :value="modelValue"
         :placeholder="placeholder"
         :required="required"
+        :disabled="disabled"
         :inputmode="currencyMask ? 'decimal' : phoneMask || numericOnly ? 'numeric' : undefined"
         @input="handleInput"
       />
@@ -252,6 +260,7 @@ const selectComboboxOption = (option) => {
         :value="modelValue"
         :placeholder="placeholder"
         :required="required"
+        :disabled="disabled"
         @input="handleInput"
       />
       <button

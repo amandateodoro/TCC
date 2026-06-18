@@ -1,19 +1,15 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
-import { UsuarioService } from '../usuario/usuario.service';
+import { AuthService } from './auth.service';
+import { Public } from './public.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly usuarios: UsuarioService) {}
+  constructor(private readonly service: AuthService) {}
 
+  @Public()
   @Post('login')
-  async login(@Body() dto: LoginDto) {
-    const usuario = await this.usuarios.validateLogin(dto.nomeDeUsuario, dto.senha);
-
-    if (!usuario) {
-      throw new UnauthorizedException('Usuario ou senha invalidos.');
-    }
-
-    return { usuario };
+  login(@Body() dto: LoginDto) {
+    return this.service.login(dto);
   }
 }

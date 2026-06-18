@@ -61,6 +61,12 @@ export class UsuarioService {
     return this.toResponse(await this.repository.save(usuario));
   }
 
+  async updateOwnProfile(id: number, dto: UpdateUsuarioDto) {
+    const { nivelAcesso, ...allowedFields } = dto;
+    void nivelAcesso;
+    return this.update(id, allowedFields);
+  }
+
   async remove(id: number) {
     const usuario = await this.findEntity(id);
     await this.repository.remove(usuario);

@@ -27,7 +27,7 @@ import {
   reportTypeOptions,
   userFormMock
 } from './mock/appData.js'
-import { api, formatCurrency, formatDate, toIsoDate } from './services/api.js'
+import { api, authToken, formatCurrency, formatDate, toIsoDate } from './services/api.js'
 
 const currentScreen = ref('dashboard')
 const isAuthenticated = ref(false)
@@ -69,6 +69,32 @@ const dashboard = ref(null)
 const reportRows = ref([])
 const editingUserId = ref(null)
 const editingContributorId = ref(null)
+const isAdministrator = computed(
+  () => currentUser.value?.nivelAcesso === 'Administrador'
+)
+
+const allowedNavigationItems = computed(() => {
+  if (isAdministrator.value) {
+    return navigationItems
+  }
+
+  return navigationItems
+    .map((item) => {
+      if (!item.children) {
+        return item
+      }
+
+      return {
+        ...item,
+        children: item.children.filter(
+          (child) =>
+            child.screen !== 'user-registration' &&
+            child.screen !== 'user-consultation'
+        )
+      }
+    })
+    .filter((item) => !item.children || item.children.length)
+})
 
 const userConsultationHeaders = [
   { key: 'name', label: 'Nome' },
@@ -260,13 +286,18 @@ const loadFinance = async () => {
 
 const loadInitialData = async () => {
   try {
-    await Promise.all([
+    const requests = [
       loadDashboard(),
-      loadUsers(),
       loadContributors(),
       loadProfessions(),
       loadFinance()
-    ])
+    ]
+
+    if (isAdministrator.value) {
+      requests.push(loadUsers())
+    }
+
+    await Promise.all(requests)
   } catch (error) {
     feedback.value = error.message
   }
@@ -284,6 +315,7 @@ const login = async () => {
       senha: loginForm.password
     })
 
+    authToken.set(response.accessToken)
     currentUser.value = response.usuario
     Object.assign(profileForm, {
       fullName: response.usuario.nomeCompleto,
@@ -323,6 +355,7 @@ const sendResetLink = () => {
 }
 
 const logout = () => {
+  authToken.clear()
   isAuthenticated.value = false
   currentUser.value = null
   authView.value = 'login'
@@ -443,7 +476,7 @@ const saveProfile = async () => {
   }
 
   try {
-    const updated = await api.patch(`/usuarios/${currentUser.value.id}`, {
+    const updated = await api.patch('/usuarios/me', {
       nomeCompleto: profileForm.fullName,
       nomeDeUsuario: profileForm.username,
       email: profileForm.email,
@@ -452,7 +485,9 @@ const saveProfile = async () => {
     })
 
     currentUser.value = updated
-    await loadUsers()
+    if (isAdministrator.value) {
+      await loadUsers()
+    }
     feedback.value = 'Perfil salvo com sucesso.'
   } catch (error) {
     feedback.value = error.message
@@ -646,8 +681,23 @@ const generateReport = async () => {
 }
 
 onMounted(() => {
-  if (isAuthenticated.value) {
-    loadInitialData()
+  if (authToken.get()) {
+    api.get('/usuarios/me')
+      .then(async (usuario) => {
+        currentUser.value = usuario
+        Object.assign(profileForm, {
+          fullName: usuario.nomeCompleto,
+          username: usuario.nomeDeUsuario,
+          email: usuario.email,
+          phone: usuario.telefone ?? '',
+          accessLevel: usuario.nivelAcesso
+        })
+        isAuthenticated.value = true
+        await loadInitialData()
+      })
+      .catch(() => {
+        authToken.clear()
+      })
   }
 })
 </script>
@@ -668,7 +718,7 @@ onMounted(() => {
 
   <div v-else class="app-shell">
     <SidebarNav
-      :items="navigationItems"
+      :items="allowedNavigationItems"
       :current-screen="currentScreen"
       @navigate="setScreen"
       @logout="logout"

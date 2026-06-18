@@ -11,11 +11,9 @@ export class CreateDespesaDto {
   @IsString()
   descricaoDespesa?: string;
 
-  @IsOptional()
   @IsInt()
   categoriaId?: number;
 
-  @IsOptional()
   @IsString()
   categoriaNome?: string;
 

@@ -13,15 +13,12 @@ export class CreateContribuinteDto {
   @IsString()
   nomeCompleto: string;
 
-  @IsOptional()
   @IsString()
   endereco?: string;
 
-  @IsOptional()
   @IsString()
   telefone?: string;
 
-  @IsOptional()
   @IsDateString()
   dataDeNascimento?: string;
 

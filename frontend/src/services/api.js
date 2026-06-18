@@ -1,9 +1,18 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api'
+const TOKEN_KEY = 'tcc_access_token'
+
+export const authToken = {
+  get: () => localStorage.getItem(TOKEN_KEY),
+  set: (token) => localStorage.setItem(TOKEN_KEY, token),
+  clear: () => localStorage.removeItem(TOKEN_KEY)
+}
 
 async function request(path, options = {}) {
+  const token = authToken.get()
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers
     },
     ...options
@@ -11,7 +20,9 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}))
-    throw new Error(error.message || 'Nao foi possivel concluir a operacao.')
+    const requestError = new Error(error.message || 'Nao foi possivel concluir a operacao.')
+    requestError.status = response.status
+    throw requestError
   }
 
   if (response.status === 204) {

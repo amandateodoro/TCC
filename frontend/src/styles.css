@@ -796,6 +796,12 @@ button {
   color: rgba(94, 99, 102, 0.42);
 }
 
+.form-control:disabled {
+  background: rgba(94, 99, 102, 0.08);
+  color: rgba(44, 44, 46, 0.66);
+  cursor: not-allowed;
+}
+
 .form-control option {
   color: #2c2c2e;
   background: #fffdfb;
