@@ -27,7 +27,12 @@ const emit = defineEmits(['save', 'cancel'])
         <FormField v-model="form.fullName" label="Nome completo" placeholder="Nome completo" class="field-span-2" />
         <FormField v-model="form.username" label="Nome de usuário" placeholder="usu123" />
         <FormField v-model="form.email" label="E-mail" placeholder="usuario@gmail.com" />
-        <FormField v-model="form.phone" label="Telefone" placeholder="(69)9 9999-9999" />
+        <FormField
+          v-model="form.phone"
+          label="Telefone"
+          placeholder="(69) 99999-9999"
+          phone-mask
+        />
         <FormField
           v-model="form.accessLevel"
           label="Nível de acesso"

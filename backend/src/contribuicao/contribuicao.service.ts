@@ -61,14 +61,14 @@ export class ContribuicaoService {
   }
 
   private async toEntityPayload(dto: Partial<CreateContribuicaoDto>) {
-    const { contribuinteIds, usuarioCadastroId, valorContribuicao, ...payload } = dto;
+    const { contribuinteId, usuarioCadastroId, valorContribuicao, ...payload } = dto;
 
     return {
       ...payload,
       valorContribuicao: valorContribuicao ? parseMoney(valorContribuicao) : undefined,
       usuarioCadastro: usuarioCadastroId ? await this.usuarios.findEntity(usuarioCadastroId) : undefined,
-      contribuintes: contribuinteIds
-        ? await Promise.all(contribuinteIds.map((id) => this.contribuintes.findEntity(id)))
+      contribuinte: contribuinteId
+        ? await this.contribuintes.findEntity(contribuinteId)
         : undefined,
     };
   }

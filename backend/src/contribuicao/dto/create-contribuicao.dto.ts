@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateContribuicaoDto {
   @IsString()
@@ -21,7 +21,6 @@ export class CreateContribuicaoDto {
   @IsInt()
   usuarioCadastroId?: number;
 
-  @IsArray()
-  @IsInt({ each: true })
-  contribuinteIds: number[];
+  @IsInt()
+  contribuinteId: number;
 }

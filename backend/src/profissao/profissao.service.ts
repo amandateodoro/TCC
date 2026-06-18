@@ -1,8 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateProfissaoDto } from './dto/create-profissao.dto';
-import { UpdateProfissaoDto } from './dto/update-profissao.dto';
+import { Brackets, Repository } from 'typeorm';
 import { Profissao } from './profissao.entity';
 
 @Injectable()
@@ -12,48 +10,28 @@ export class ProfissaoService {
     private readonly repository: Repository<Profissao>,
   ) {}
 
-  create(dto: CreateProfissaoDto) {
-    return this.repository.save(this.repository.create(dto));
-  }
+  findAll(search?: string, limit = 20) {
+    const query = this.repository
+      .createQueryBuilder('profissao')
+      .where('profissao.codigo_cbo IS NOT NULL')
+      .orderBy('profissao.nome', 'ASC')
+      .take(Math.min(Math.max(limit, 1), 100));
 
-  findAll() {
-    return this.repository.find({ order: { nome: 'ASC' } });
-  }
-
-  async findEntity(id: number) {
-    const profissao = await this.repository.findOneBy({ id });
-
-    if (!profissao) {
-      throw new NotFoundException('Profissao nao encontrada.');
+    if (search?.trim()) {
+      query.andWhere(
+        new Brackets((builder) => {
+          builder
+            .where('profissao.nome LIKE :search', {
+              search: `%${search.trim()}%`,
+            })
+            .orWhere('profissao.codigo_cbo LIKE :search', {
+              search: `%${search.trim()}%`,
+            });
+        }),
+      );
     }
 
-    return profissao;
+    return query.getMany();
   }
 
-  async findOrCreateByName(nome?: string) {
-    if (!nome) {
-      return undefined;
-    }
-
-    const normalized = nome.trim();
-    const existing = await this.repository.findOneBy({ nome: normalized });
-
-    if (existing) {
-      return existing;
-    }
-
-    return this.repository.save(this.repository.create({ nome: normalized }));
-  }
-
-  async update(id: number, dto: UpdateProfissaoDto) {
-    const profissao = await this.findEntity(id);
-    Object.assign(profissao, dto);
-    return this.repository.save(profissao);
-  }
-
-  async remove(id: number) {
-    const profissao = await this.findEntity(id);
-    await this.repository.remove(profissao);
-    return { deleted: true };
-  }
 }

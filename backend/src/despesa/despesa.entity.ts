@@ -2,8 +2,6 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -30,13 +28,9 @@ export class Despesa {
   @JoinColumn({ name: 'fk_id_categoria_despesa' })
   categoria: CategoriaDespesa;
 
-  @ManyToMany(() => Usuario, (usuario) => usuario.despesas, {
+  @ManyToOne(() => Usuario, (usuario) => usuario.despesas, {
     eager: true,
   })
-  @JoinTable({
-    name: 'usuario_despesa',
-    joinColumn: { name: 'fk_id_despesa', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'fk_id_usuario', referencedColumnName: 'id' },
-  })
-  usuarios: Usuario[];
+  @JoinColumn({ name: 'fk_id_usuario' })
+  usuario: Usuario;
 }

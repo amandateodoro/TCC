@@ -38,7 +38,15 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  phoneMask: {
+    type: Boolean,
+    default: false
+  },
   togglePassword: {
+    type: Boolean,
+    default: false
+  },
+  required: {
     type: Boolean,
     default: false
   }
@@ -46,11 +54,19 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 const showPassword = ref(false)
-const listId = computed(() =>
-  props.listOptions.length
-    ? `field-list-${props.label.toLowerCase().replace(/[^a-z0-9]+/gi, '-')}`
-    : undefined
-)
+const isComboboxOpen = ref(false)
+let closeComboboxTimer
+
+const visibleListOptions = computed(() => {
+  const search = String(props.modelValue ?? '').trim().toLocaleLowerCase('pt-BR')
+  const options = search
+    ? props.listOptions.filter((option) =>
+        option.toLocaleLowerCase('pt-BR').includes(search)
+      )
+    : props.listOptions
+
+  return options.slice(0, 20)
+})
 
 const formatCurrencyValue = (value) => {
   const digits = value.replace(/\D+/g, '')
@@ -66,32 +82,135 @@ const formatCurrencyValue = (value) => {
   return `${integerPart},${decimalPart}`
 }
 
+const formatPhoneValue = (value) => {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+
+  if (!digits) {
+    return ''
+  }
+
+  if (digits.length <= 2) {
+    return `(${digits}`
+  }
+
+  const areaCode = digits.slice(0, 2)
+  const number = digits.slice(2)
+
+  if (number.length <= 4) {
+    return `(${areaCode}) ${number}`
+  }
+
+  const firstPartLength = digits.length === 11 ? 5 : 4
+  const firstPart = number.slice(0, firstPartLength)
+  const secondPart = number.slice(firstPartLength)
+
+  return secondPart
+    ? `(${areaCode}) ${firstPart}-${secondPart}`
+    : `(${areaCode}) ${firstPart}`
+}
+
 const handleInput = (event) => {
   const nextValue = props.currencyMask
     ? formatCurrencyValue(event.target.value)
+    : props.phoneMask
+      ? formatPhoneValue(event.target.value)
     : props.numericOnly
       ? event.target.value
           .replace(/[^\d,]/g, '')
           .replace(/,(?=.*,)/g, '')
       : event.target.value
 
-  if ((props.numericOnly || props.currencyMask) && event.target.value !== nextValue) {
+  if (
+    (props.numericOnly || props.currencyMask || props.phoneMask) &&
+    event.target.value !== nextValue
+  ) {
     event.target.value = nextValue
   }
 
   emit('update:modelValue', nextValue)
+
+  if (props.as === 'combobox') {
+    isComboboxOpen.value = true
+  }
+}
+
+const openCombobox = () => {
+  clearTimeout(closeComboboxTimer)
+  isComboboxOpen.value = true
+}
+
+const closeCombobox = () => {
+  closeComboboxTimer = setTimeout(() => {
+    isComboboxOpen.value = false
+  }, 120)
+}
+
+const selectComboboxOption = (option) => {
+  clearTimeout(closeComboboxTimer)
+  emit('update:modelValue', option)
+  isComboboxOpen.value = false
 }
 </script>
 
 <template>
-  <label class="form-field" :class="{ 'form-field--select': as === 'select' }">
+  <label
+    class="form-field"
+    :class="{ 'form-field--select': as === 'select' || as === 'combobox' }"
+  >
     <span class="form-field__label">{{ label }}</span>
+
+    <div v-if="as === 'combobox'" class="form-combobox">
+      <input
+        class="form-control form-control--select form-combobox__input"
+        :class="{ 'form-control--empty': !modelValue }"
+        type="text"
+        autocomplete="off"
+        role="combobox"
+        aria-autocomplete="list"
+        :aria-expanded="isComboboxOpen"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :required="required"
+        @focus="openCombobox"
+        @blur="closeCombobox"
+        @input="handleInput"
+        @keydown.esc="isComboboxOpen = false"
+      />
+      <button
+        type="button"
+        class="form-combobox__toggle"
+        aria-label="Abrir opções"
+        @mousedown.prevent
+        @click="isComboboxOpen = !isComboboxOpen"
+      >
+        <span class="form-select-wrap__arrow" aria-hidden="true"></span>
+      </button>
+
+      <div v-if="isComboboxOpen" class="form-combobox__menu" role="listbox">
+        <button
+          v-for="option in visibleListOptions"
+          :key="option"
+          type="button"
+          class="form-combobox__option"
+          :class="{ 'form-combobox__option--selected': option === modelValue }"
+          role="option"
+          :aria-selected="option === modelValue"
+          @mousedown.prevent="selectComboboxOption(option)"
+        >
+          {{ option }}
+        </button>
+        <p v-if="!visibleListOptions.length" class="form-combobox__empty">
+          Digite ao menos dois caracteres para buscar
+        </p>
+      </div>
+    </div>
 
     <div v-if="as === 'select'" class="form-select-wrap">
       <select
         class="form-control form-control--select"
         :class="{ 'form-control--empty': !modelValue }"
         :value="modelValue"
+        :required="required"
         @change="emit('update:modelValue', $event.target.value)"
       >
         <option value="" disabled>{{ placeholder }}</option>
@@ -108,33 +227,31 @@ const handleInput = (event) => {
         :class="{ 'form-control--date-empty': !modelValue }"
         :type="type"
         :value="modelValue"
+        :required="required"
         @input="emit('update:modelValue', $event.target.value)"
       />
       <span v-if="!modelValue" class="form-date-wrap__placeholder">{{ placeholder }}</span>
     </div>
 
-    <template v-else-if="type !== 'password' || !togglePassword">
+    <template v-else-if="as !== 'combobox' && (type !== 'password' || !togglePassword)">
       <input
         class="form-control"
         :type="type"
         :value="modelValue"
         :placeholder="placeholder"
-        :list="listId"
-        :inputmode="currencyMask ? 'decimal' : numericOnly ? 'numeric' : undefined"
+        :required="required"
+        :inputmode="currencyMask ? 'decimal' : phoneMask || numericOnly ? 'numeric' : undefined"
         @input="handleInput"
       />
-
-      <datalist v-if="listOptions.length" :id="listId">
-        <option v-for="option in listOptions" :key="option" :value="option" />
-      </datalist>
     </template>
 
-    <div v-else class="form-password-wrap">
+    <div v-else-if="as !== 'combobox'" class="form-password-wrap">
       <input
         class="form-control form-control--password"
         :type="showPassword ? 'text' : 'password'"
         :value="modelValue"
         :placeholder="placeholder"
+        :required="required"
         @input="handleInput"
       />
       <button

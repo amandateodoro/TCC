@@ -1,6 +1,5 @@
-import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Contribuicao } from '../contribuicao/contribuicao.entity';
-import { Contribuinte } from '../contribuinte/contribuinte.entity';
 import { Despesa } from '../despesa/despesa.entity';
 import { Oferta } from '../oferta/oferta.entity';
 
@@ -37,15 +36,12 @@ export class Usuario {
   @Column({ length: 20, nullable: true })
   telefone?: string;
 
-  @OneToMany(() => Contribuinte, (contribuinte) => contribuinte.usuarioCadastro)
-  contribuintesCadastrados: Contribuinte[];
-
   @OneToMany(() => Contribuicao, (contribuicao) => contribuicao.usuarioCadastro)
   contribuicoesCadastradas: Contribuicao[];
 
   @OneToMany(() => Oferta, (oferta) => oferta.usuarioCadastro)
   ofertasCadastradas: Oferta[];
 
-  @ManyToMany(() => Despesa, (despesa) => despesa.usuarios)
+  @OneToMany(() => Despesa, (despesa) => despesa.usuario)
   despesas: Despesa[];
 }

@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateDespesaDto {
   @IsString()
@@ -19,8 +19,6 @@ export class CreateDespesaDto {
   @IsString()
   categoriaNome?: string;
 
-  @IsOptional()
-  @IsArray()
-  @IsInt({ each: true })
-  usuarioIds?: number[];
+  @IsInt()
+  usuarioId: number;
 }

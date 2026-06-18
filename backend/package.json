@@ -13,7 +13,8 @@
     "migration:generate": "npm run db:create && npm run typeorm -- migration:generate src/database/migrations/AutoMigration -d src/database/data-source.ts",
     "migration:run": "npm run db:create && npm run typeorm -- migration:run -d src/database/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/database/data-source.ts",
-    "migration:show": "npm run typeorm -- migration:show -d src/database/data-source.ts"
+    "migration:show": "npm run typeorm -- migration:show -d src/database/data-source.ts",
+    "profissao:import": "npm run db:create && ts-node -r tsconfig-paths/register src/profissao/import-cbo.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",
@@ -25,6 +26,7 @@
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "csv-parse": "^5.6.0",
     "mysql2": "^3.11.5",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",

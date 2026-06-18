@@ -75,10 +75,54 @@ Em producao, mantenha `DB_SYNCHRONIZE=false`. Se quiser que a aplicacao rode mig
 ## Observacoes de modelagem
 
 - Valores financeiros usam `decimal(10,2)` em vez de `double`.
-- `contribuinte_contribuicao` foi mantida como tabela de relacionamento.
-- `usuario_despesa` foi mantida para permitir mais de um usuario associado a uma despesa.
+- `profissao` e `contribuinte` possuem relacao N:N pela tabela `profissao_contribuinte`.
+- O cadastro de contribuinte recebe `profissaoIds`; a tela atual envia uma profissao, mas a API suporta varias.
+- `contribuinte` nao possui relacionamento com `usuario`.
+- Cada `contribuicao` referencia diretamente um contribuinte por `fk_id_contribuinte`.
+- Cada `despesa` referencia diretamente o usuario que a registrou por `fk_id_usuario`.
 - `oferta` foi adicionada porque ja existe no fluxo do frontend.
 - Senhas de usuarios sao salvas com hash `bcrypt`.
 - A migration `SeedAdminUser` cria um usuario inicial para desenvolvimento:
   - usuario: `admin`
   - senha: `admin123`
+
+## Importacao da CBO
+
+A tabela `profissao` possui o campo unico `codigo_cbo`. A API disponibiliza
+somente ocupacoes oficiais importadas e nao permite cadastro, edicao ou exclusao
+manual de profissoes.
+
+1. Baixe a relacao oficial de ocupacoes no portal da CBO do Ministerio do
+   Trabalho e Emprego.
+2. Salve o CSV em `data/cbo/cbo-ocupacoes.csv`.
+3. Execute:
+
+```bash
+npm run profissao:import
+```
+
+Para importar outro caminho:
+
+```bash
+npm run profissao:import -- C:/caminho/cbo.csv
+```
+
+O importador:
+
+- aceita separador `;` ou `,`;
+- normaliza o codigo para o formato `0000-00`;
+- insere novas ocupacoes;
+- atualiza nomes de codigos existentes;
+- nao duplica dados quando executado novamente;
+- informa quantos registros foram inseridos, atualizados, ignorados ou invalidos.
+- aceita arquivos UTF-8 e Windows-1252.
+
+Profissoes antigas sem codigo CBO e sem vinculos sao removidas por migration.
+Registros antigos ainda vinculados a contribuintes ficam apenas como legado e
+nao aparecem na busca; devem ser substituidos por uma ocupacao oficial.
+
+A busca usada pela combobox e feita por nome ou codigo:
+
+```http
+GET /api/profissoes?search=enferm&limit=20
+```

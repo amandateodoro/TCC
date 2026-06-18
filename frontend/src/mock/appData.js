@@ -85,7 +85,8 @@ export const contributorFormMock = {
   married: false,
   spouseName: '',
   spousePhone: '',
-  spouseBirthDate: ''
+  spouseBirthDate: '',
+  spouseProfession: ''
 }
 
 export const consultationUserRows = [

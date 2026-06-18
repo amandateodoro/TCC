@@ -60,11 +60,15 @@ const contributorSearch = ref('')
 const currentUser = ref(null)
 const users = ref([])
 const contributors = ref([])
+const professions = ref([])
+let professionSearchTimer
 const contributions = ref([])
 const offerings = ref([])
 const expenses = ref([])
 const dashboard = ref(null)
 const reportRows = ref([])
+const editingUserId = ref(null)
+const editingContributorId = ref(null)
 
 const userConsultationHeaders = [
   { key: 'name', label: 'Nome' },
@@ -126,12 +130,16 @@ const contributorNameOptions = computed(() =>
     .sort((first, second) => first.localeCompare(second, 'pt-BR'))
 )
 
+const professionOptions = computed(() =>
+  professions.value.map(formatProfessionOption)
+)
+
 const financeContributionRows = computed(() =>
   contributions.value.map((contribution) => ({
     id: contribution.id,
-    contributor: contribution.contribuintes?.map((item) => item.nomeCompleto).join(', ') ?? '',
+    contributor: contribution.contribuinte?.nomeCompleto ?? '',
     category: contribution.tipoContribuicao,
-    observation: contribution.observacao ?? contribution.contribuintes?.map((item) => item.nomeCompleto).join(', ') ?? '',
+    observation: contribution.observacao ?? contribution.contribuinte?.nomeCompleto ?? '',
     paymentDate: formatDate(contribution.dataDePagamento),
     amount: formatCurrency(contribution.valorContribuicao)
   }))
@@ -177,6 +185,16 @@ const sumRows = (rows, key) =>
   formatCurrency(rows.reduce((total, row) => total + Number(row[key] ?? 0), 0))
 
 const setScreen = (screen) => {
+  if (screen === 'user-registration') {
+    editingUserId.value = null
+    resetForm(userForm, userFormMock)
+  }
+
+  if (screen === 'contributor-registration') {
+    editingContributorId.value = null
+    resetForm(contributorForm, contributorFormMock)
+  }
+
   currentScreen.value = screen
   feedback.value = ''
 
@@ -202,6 +220,32 @@ const loadContributors = async () => {
   contributors.value = await api.get('/contribuintes')
 }
 
+const loadProfessions = async (search = '') => {
+  const result = await api.get(
+    `/profissoes?search=${encodeURIComponent(search)}&limit=20`
+  )
+  const merged = new Map(professions.value.map((profession) => [profession.id, profession]))
+
+  result.forEach((profession) => merged.set(profession.id, profession))
+  professions.value = [...merged.values()]
+}
+
+const searchProfessions = (search) => {
+  clearTimeout(professionSearchTimer)
+
+  if (search.trim().length < 2) {
+    return
+  }
+
+  professionSearchTimer = setTimeout(() => {
+    loadProfessions(search).catch((error) => {
+      feedback.value = error.message
+    })
+  }, 300)
+}
+
+const formatProfessionOption = (profession) => profession.nome
+
 const loadFinance = async () => {
   const [contributionData, offeringData, expenseData] = await Promise.all([
     api.get('/contribuicoes'),
@@ -216,7 +260,13 @@ const loadFinance = async () => {
 
 const loadInitialData = async () => {
   try {
-    await Promise.all([loadDashboard(), loadUsers(), loadContributors(), loadFinance()])
+    await Promise.all([
+      loadDashboard(),
+      loadUsers(),
+      loadContributors(),
+      loadProfessions(),
+      loadFinance()
+    ])
   } catch (error) {
     feedback.value = error.message
   }
@@ -287,38 +337,100 @@ const resetForm = (formState, defaults) => {
   Object.assign(formState, defaults)
 }
 
+const toDateInput = (value) => value?.slice(0, 10) ?? ''
+
 const saveScreen = async (screen) => {
   try {
     if (screen === 'user-registration') {
-      await api.post('/usuarios', {
+      const payload = {
         nomeCompleto: userForm.fullName,
         nomeDeUsuario: userForm.username,
-        senha: userForm.password,
         email: userForm.email,
         nivelAcesso: userForm.accessLevel,
         telefone: userForm.phone
-      })
+      }
+
+      if (editingUserId.value) {
+        if (userForm.password) {
+          payload.senha = userForm.password
+        }
+        await api.patch(`/usuarios/${editingUserId.value}`, payload)
+      } else {
+        payload.senha = userForm.password
+        await api.post('/usuarios', payload)
+      }
+
+      const wasEditing = Boolean(editingUserId.value)
       resetForm(userForm, userFormMock)
       await loadUsers()
-      feedback.value = 'Usuário salvo com sucesso.'
+      editingUserId.value = null
+      currentScreen.value = 'user-consultation'
+      feedback.value = wasEditing
+        ? 'Usuário atualizado com sucesso.'
+        : 'Usuário salvo com sucesso.'
       return
     }
 
-    await api.post('/contribuintes', {
+    if (
+      contributorForm.married &&
+      (!contributorForm.spouseName.trim() ||
+        !contributorForm.spousePhone.trim() ||
+        !contributorForm.spouseBirthDate ||
+        !contributorForm.spouseProfession.trim())
+    ) {
+      feedback.value =
+        'Preencha nome, telefone, data de nascimento e profissão do cônjuge.'
+      return
+    }
+
+    const profession = professions.value.find(
+      (item) => formatProfessionOption(item) === contributorForm.profession
+    )
+    const spouseProfession = professions.value.find(
+      (item) => formatProfessionOption(item) === contributorForm.spouseProfession
+    )
+
+    if (!profession) {
+      feedback.value = 'Selecione uma profissão cadastrada.'
+      return
+    }
+
+    if (contributorForm.married && !spouseProfession) {
+      feedback.value = 'Selecione uma profissão cadastrada para o cônjuge.'
+      return
+    }
+
+    const wasMarried = contributorForm.married
+
+    const payload = {
       nomeCompleto: contributorForm.fullName,
       endereco: contributorForm.address,
       telefone: contributorForm.phone,
       dataDeNascimento: contributorForm.birthDate || undefined,
-      profissaoNome: contributorForm.profession,
+      profissaoIds: [profession.id],
       casado: contributorForm.married,
       nomeConjuge: contributorForm.spouseName || undefined,
       telefoneConjuge: contributorForm.spousePhone || undefined,
       dataNascimentoConjuge: contributorForm.spouseBirthDate || undefined,
-      usuarioCadastroId: currentUser.value?.id
-    })
+      profissaoConjugeIds: spouseProfession ? [spouseProfession.id] : undefined
+    }
+
+    if (editingContributorId.value) {
+      await api.patch(`/contribuintes/${editingContributorId.value}`, payload)
+    } else {
+      await api.post('/contribuintes', payload)
+    }
+
+    const wasEditing = Boolean(editingContributorId.value)
     resetForm(contributorForm, contributorFormMock)
     await Promise.all([loadContributors(), loadDashboard()])
-    feedback.value = 'Contribuinte salvo com sucesso.'
+    editingContributorId.value = null
+    currentScreen.value = 'contributor-consultation'
+    feedback.value = wasEditing
+      ? 'Contribuinte atualizado com sucesso.'
+      : wasMarried
+        ? 'Contribuinte e cônjuge salvos com sucesso.'
+        : 'Contribuinte salvo com sucesso.'
   } catch (error) {
     feedback.value = error.message
   }
@@ -362,15 +474,78 @@ const cancelProfile = () => {
 const cancelScreen = (screen) => {
   if (screen === 'user-registration') {
     resetForm(userForm, userFormMock)
+    if (editingUserId.value) {
+      editingUserId.value = null
+      currentScreen.value = 'user-consultation'
+      feedback.value = ''
+      return
+    }
   } else {
     resetForm(contributorForm, contributorFormMock)
+    if (editingContributorId.value) {
+      editingContributorId.value = null
+      currentScreen.value = 'contributor-consultation'
+      feedback.value = ''
+      return
+    }
   }
 
   feedback.value = 'Formulário limpo.'
 }
 
 const editRow = (row) => {
-  feedback.value = `Edição de ${row.name} ainda será conectada em uma próxima etapa.`
+  if (currentScreen.value === 'user-consultation') {
+    const user = users.value.find((item) => item.id === row.id)
+
+    if (!user) {
+      feedback.value = 'Usuário não encontrado.'
+      return
+    }
+
+    editingUserId.value = user.id
+    Object.assign(userForm, {
+      fullName: user.nomeCompleto,
+      username: user.nomeDeUsuario,
+      password: '',
+      email: user.email,
+      accessLevel: user.nivelAcesso,
+      phone: user.telefone ?? ''
+    })
+    currentScreen.value = 'user-registration'
+    feedback.value = ''
+    return
+  }
+
+  const contributor = contributors.value.find((item) => item.id === row.id)
+
+  if (!contributor) {
+    feedback.value = 'Contribuinte não encontrado.'
+    return
+  }
+
+  const relatedProfessions = [
+    ...(contributor.profissoes ?? []),
+    ...(contributor.conjuge?.profissoes ?? [])
+  ]
+  const merged = new Map(professions.value.map((profession) => [profession.id, profession]))
+  relatedProfessions.forEach((profession) => merged.set(profession.id, profession))
+  professions.value = [...merged.values()]
+
+  editingContributorId.value = contributor.id
+  Object.assign(contributorForm, {
+    fullName: contributor.nomeCompleto,
+    address: contributor.endereco ?? '',
+    phone: contributor.telefone ?? '',
+    birthDate: toDateInput(contributor.dataDeNascimento),
+    profession: contributor.profissoes?.[0]?.nome ?? '',
+    married: contributor.casado,
+    spouseName: contributor.conjuge?.nomeCompleto ?? '',
+    spousePhone: contributor.conjuge?.telefone ?? '',
+    spouseBirthDate: toDateInput(contributor.conjuge?.dataDeNascimento),
+    spouseProfession: contributor.conjuge?.profissoes?.[0]?.nome ?? ''
+  })
+  currentScreen.value = 'contributor-registration'
+  feedback.value = ''
 }
 
 const deleteRow = async (row) => {
@@ -410,7 +585,7 @@ const saveFinance = async (screen) => {
         dataDePagamento: toIsoDate(financeContributionForm.paymentDate),
         observacao: financeContributionForm.observation,
         usuarioCadastroId: currentUser.value?.id,
-        contribuinteIds: [contributor.id]
+        contribuinteId: contributor.id
       })
       resetForm(financeContributionForm, financeContributionFormMock)
       await Promise.all([loadFinance(), loadDashboard()])
@@ -437,7 +612,7 @@ const saveFinance = async (screen) => {
       descricaoDespesa: financeExpenseForm.observation,
       valorDespesa: financeExpenseForm.amount,
       dataDespesa: toIsoDate(financeExpenseForm.date),
-      usuarioIds: currentUser.value?.id ? [currentUser.value.id] : []
+      usuarioId: currentUser.value?.id
     })
     resetForm(financeExpenseForm, financeExpenseFormMock)
     await Promise.all([loadFinance(), loadDashboard()])
@@ -529,6 +704,7 @@ onMounted(() => {
         <template v-else-if="currentScreen === 'user-registration'">
           <UserRegistrationForm
             :form="userForm"
+            :editing="Boolean(editingUserId)"
             @save="saveScreen('user-registration')"
             @cancel="cancelScreen('user-registration')"
           />
@@ -537,6 +713,9 @@ onMounted(() => {
         <template v-else-if="currentScreen === 'contributor-registration'">
           <ContributorRegistrationForm
             :form="contributorForm"
+            :editing="Boolean(editingContributorId)"
+            :profession-options="professionOptions"
+            @profession-search="searchProfessions"
             @save="saveScreen('contributor-registration')"
             @cancel="cancelScreen('contributor-registration')"
           />

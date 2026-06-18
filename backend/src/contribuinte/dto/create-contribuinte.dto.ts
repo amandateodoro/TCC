@@ -1,4 +1,13 @@
-import { IsBoolean, IsDateString, IsInt, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsArray,
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
 
 export class CreateContribuinteDto {
   @IsString()
@@ -20,27 +29,27 @@ export class CreateContribuinteDto {
   @IsBoolean()
   casado?: boolean;
 
-  @IsOptional()
+  @ValidateIf((dto: CreateContribuinteDto) => dto.casado === true)
   @IsString()
+  @IsNotEmpty()
   nomeConjuge?: string;
 
-  @IsOptional()
+  @ValidateIf((dto: CreateContribuinteDto) => dto.casado === true)
   @IsString()
+  @IsNotEmpty()
   telefoneConjuge?: string;
 
-  @IsOptional()
+  @ValidateIf((dto: CreateContribuinteDto) => dto.casado === true)
   @IsDateString()
   dataNascimentoConjuge?: string;
 
-  @IsOptional()
-  @IsInt()
-  profissaoId?: number;
+  @ValidateIf((dto: CreateContribuinteDto) => dto.casado === true)
+  @IsArray()
+  @IsInt({ each: true })
+  profissaoConjugeIds?: number[];
 
-  @IsOptional()
-  @IsString()
-  profissaoNome?: string;
+  @IsArray()
+  @IsInt({ each: true })
+  profissaoIds: number[];
 
-  @IsOptional()
-  @IsInt()
-  usuarioCadastroId?: number;
 }

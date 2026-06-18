@@ -61,7 +61,7 @@ export class DespesaService {
   }
 
   private async toEntityPayload(dto: Partial<CreateDespesaDto>) {
-    const { categoriaId, categoriaNome, usuarioIds, valorDespesa, ...payload } = dto;
+    const { categoriaId, categoriaNome, usuarioId, valorDespesa, ...payload } = dto;
 
     return {
       ...payload,
@@ -69,7 +69,7 @@ export class DespesaService {
       categoria: categoriaId
         ? await this.categorias.findEntity(categoriaId)
         : await this.categorias.findOrCreateByName(categoriaNome),
-      usuarios: usuarioIds ? await Promise.all(usuarioIds.map((id) => this.usuarios.findEntity(id))) : undefined,
+      usuario: usuarioId ? await this.usuarios.findEntity(usuarioId) : undefined,
     };
   }
 }

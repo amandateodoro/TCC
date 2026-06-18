@@ -2,13 +2,14 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
-  ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Contribuicao } from '../contribuicao/contribuicao.entity';
 import { Profissao } from '../profissao/profissao.entity';
-import { Usuario } from '../usuario/usuario.entity';
 
 @Entity('contribuinte')
 export class Contribuinte {
@@ -30,29 +31,20 @@ export class Contribuinte {
   @Column({ name: 'casado', default: false })
   casado: boolean;
 
-  @Column({ name: 'nome_conjuge', length: 120, nullable: true })
-  nomeConjuge?: string;
+  @OneToOne(() => Contribuinte, { nullable: true })
+  @JoinColumn({ name: 'fk_id_conjuge' })
+  conjuge?: Contribuinte | null;
 
-  @Column({ name: 'telefone_conjuge', length: 20, nullable: true })
-  telefoneConjuge?: string;
-
-  @Column({ name: 'data_nascimento_conjuge', type: 'date', nullable: true })
-  dataNascimentoConjuge?: string;
-
-  @ManyToOne(() => Profissao, (profissao) => profissao.contribuintes, {
-    nullable: true,
+  @ManyToMany(() => Profissao, (profissao) => profissao.contribuintes, {
     eager: true,
   })
-  @JoinColumn({ name: 'fk_id_profissao_contribuinte' })
-  profissao?: Profissao;
-
-  @ManyToOne(() => Usuario, (usuario) => usuario.contribuintesCadastrados, {
-    nullable: true,
-    eager: true,
+  @JoinTable({
+    name: 'profissao_contribuinte',
+    joinColumn: { name: 'fk_id_contribuinte', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'fk_id_profissao', referencedColumnName: 'id' },
   })
-  @JoinColumn({ name: 'fk_id_usuario' })
-  usuarioCadastro?: Usuario;
+  profissoes: Profissao[];
 
-  @ManyToMany(() => Contribuicao, (contribuicao) => contribuicao.contribuintes)
+  @OneToMany(() => Contribuicao, (contribuicao) => contribuicao.contribuinte)
   contribuicoes: Contribuicao[];
 }

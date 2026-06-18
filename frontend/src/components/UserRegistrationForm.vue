@@ -6,6 +6,10 @@ defineProps({
   form: {
     type: Object,
     required: true
+  },
+  editing: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -23,7 +27,7 @@ const accessOptions = ['Administrador', 'Secretaria']
         <FormField
           v-model="form.password"
           label="Senha"
-          placeholder="*******"
+          :placeholder="editing ? 'Deixe em branco para manter a senha' : '*******'"
           type="password"
           :toggle-password="true"
         />
@@ -35,10 +39,19 @@ const accessOptions = ['Administrador', 'Secretaria']
           as="select"
           :options="accessOptions"
         />
-        <FormField v-model="form.phone" label="Telefone" placeholder="(69)9 9999-9999" />
+        <FormField
+          v-model="form.phone"
+          label="Telefone"
+          placeholder="(69) 99999-9999"
+          phone-mask
+        />
       </div>
     </div>
 
-    <FormActions @save="emit('save')" @cancel="emit('cancel')" />
+    <FormActions
+      :save-label="editing ? 'Salvar alterações' : 'Salvar'"
+      @save="emit('save')"
+      @cancel="emit('cancel')"
+    />
   </section>
 </template>
