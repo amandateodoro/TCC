@@ -59,6 +59,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 const showPassword = ref(false)
 const isComboboxOpen = ref(false)
+const isDateFocused = ref(false)
 let closeComboboxTimer
 
 const visibleListOptions = computed(() => {
@@ -230,14 +231,16 @@ const selectComboboxOption = (option) => {
     <div v-else-if="type === 'date'" class="form-date-wrap">
       <input
         class="form-control form-control--date"
-        :class="{ 'form-control--date-empty': !modelValue }"
+        :class="{ 'form-control--date-empty': !modelValue && !isDateFocused }"
         :type="type"
         :value="modelValue"
         :required="required"
         :disabled="disabled"
+        @focus="isDateFocused = true"
+        @blur="isDateFocused = false"
         @input="emit('update:modelValue', $event.target.value)"
       />
-      <span v-if="!modelValue" class="form-date-wrap__placeholder">{{ placeholder }}</span>
+      <span v-if="!modelValue && !isDateFocused" class="form-date-wrap__placeholder">{{ placeholder }}</span>
     </div>
 
     <template v-else-if="as !== 'combobox' && (type !== 'password' || !togglePassword)">

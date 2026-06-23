@@ -510,15 +510,65 @@ button {
 }
 
 .profile-button {
-  width: 39px;
-  height: 39px;
+  min-width: 150px;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.72rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.profile-button:hover {
+  background: rgba(173, 136, 102, 0.1);
+  box-shadow: 0 8px 18px rgba(58, 50, 43, 0.08);
+}
+
+.profile-button__avatar {
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
-  border: 0;
+  flex: 0 0 34px;
   border-radius: 50%;
-  background: transparent;
-  color: #6b6968;
-  cursor: pointer;
+  background: #e9dfd2;
+  color: #837365;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.profile-button__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.profile-button__name {
+  max-width: 122px;
+  overflow: hidden;
+  color: #2d2926;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-button__role {
+  color: rgba(94, 99, 102, 0.76);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.1;
 }
 
 .dashboard-panel {
@@ -1007,6 +1057,76 @@ button {
   color: var(--text-primary);
   font-size: 0.92rem;
   font-weight: 500;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(31, 25, 20, 0.28);
+}
+
+.confirmation-modal {
+  width: min(420px, 100%);
+  padding: 1.35rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 20px 45px rgba(44, 36, 29, 0.18);
+}
+
+.confirmation-modal h2 {
+  margin: 0 0 0.6rem;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.confirmation-modal p {
+  margin: 0;
+  color: rgba(44, 44, 46, 0.78);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.confirmation-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.confirmation-modal__button {
+  min-height: 38px;
+  padding: 0 1rem;
+  border: 1px solid rgba(173, 136, 102, 0.28);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.confirmation-modal__button:hover {
+  background: rgba(173, 136, 102, 0.1);
+  border-color: rgba(173, 136, 102, 0.46);
+}
+
+.confirmation-modal__button--danger {
+  border-color: #b95a4e;
+  background: #b95a4e;
+  color: #fff;
+}
+
+.confirmation-modal__button--danger:hover {
+  border-color: #9f463c;
+  background: #9f463c;
 }
 
 .consultation-panel {

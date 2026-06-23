@@ -15,18 +15,18 @@ import UserRegistrationForm from './components/UserRegistrationForm.vue'
 import {
   celebrationTypeOptions,
   contributionTypeOptions,
-  contributorFormMock,
-  financeCategoryOptions,
-  financeContributionFormMock,
-  financeExpenseFormMock,
-  financeOfferingFormMock,
-  navigationItems,
   paymentMethodOptions,
-  quickActions,
-  reportFormMock,
-  reportTypeOptions,
-  userFormMock
-} from './mock/appData.js'
+  reportTypeOptions
+} from './config/options.js'
+import { navigationItems, quickActions } from './config/navigation.js'
+import {
+  contributorFormDefaults,
+  financeContributionFormDefaults,
+  financeExpenseFormDefaults,
+  financeOfferingFormDefaults,
+  reportFormDefaults,
+  userFormDefaults
+} from './forms/defaultValues.js'
 import { api, authToken, formatCurrency, formatDate, toIsoDate } from './services/api.js'
 
 const currentScreen = ref('dashboard')
@@ -39,7 +39,7 @@ const loginForm = reactive({
   email: ''
 })
 
-const userForm = reactive({ ...userFormMock })
+const userForm = reactive({ ...userFormDefaults })
 const profileForm = reactive({
   fullName: 'Amanda Teodoro',
   username: 'amanda.teodoro',
@@ -47,11 +47,11 @@ const profileForm = reactive({
   phone: '(69)9 9999-9999',
   accessLevel: 'Administrador'
 })
-const contributorForm = reactive({ ...contributorFormMock })
-const financeContributionForm = reactive({ ...financeContributionFormMock })
-const financeOfferingForm = reactive({ ...financeOfferingFormMock })
-const financeExpenseForm = reactive({ ...financeExpenseFormMock })
-const reportForm = reactive({ ...reportFormMock })
+const contributorForm = reactive({ ...contributorFormDefaults })
+const financeContributionForm = reactive({ ...financeContributionFormDefaults })
+const financeOfferingForm = reactive({ ...financeOfferingFormDefaults })
+const financeExpenseForm = reactive({ ...financeExpenseFormDefaults })
+const reportForm = reactive({ ...reportFormDefaults })
 
 const feedback = ref('')
 const loginFeedback = ref('')
@@ -61,6 +61,7 @@ const currentUser = ref(null)
 const users = ref([])
 const contributors = ref([])
 const professions = ref([])
+const expenseCategories = ref([])
 let professionSearchTimer
 const contributions = ref([])
 const offerings = ref([])
@@ -69,9 +70,26 @@ const dashboard = ref(null)
 const reportRows = ref([])
 const editingUserId = ref(null)
 const editingContributorId = ref(null)
+const deleteConfirmation = reactive({
+  visible: false,
+  type: '',
+  row: null
+})
 const isAdministrator = computed(
   () => currentUser.value?.nivelAcesso === 'Administrador'
 )
+
+const deleteConfirmationTitle = computed(() =>
+  deleteConfirmation.type === 'user'
+    ? 'Excluir usuário'
+    : 'Excluir contribuinte'
+)
+
+const deleteConfirmationMessage = computed(() => {
+  const name = deleteConfirmation.row?.name ?? 'este registro'
+
+  return `Deseja realmente excluir ${name}?`
+})
 
 const allowedNavigationItems = computed(() => {
   if (isAdministrator.value) {
@@ -160,6 +178,10 @@ const professionOptions = computed(() =>
   professions.value.map(formatProfessionOption)
 )
 
+const financeCategoryOptions = computed(() =>
+  expenseCategories.value.map((category) => category.nome)
+)
+
 const financeContributionRows = computed(() =>
   contributions.value.map((contribution) => ({
     id: contribution.id,
@@ -213,12 +235,12 @@ const sumRows = (rows, key) =>
 const setScreen = (screen) => {
   if (screen === 'user-registration') {
     editingUserId.value = null
-    resetForm(userForm, userFormMock)
+    resetForm(userForm, userFormDefaults)
   }
 
   if (screen === 'contributor-registration') {
     editingContributorId.value = null
-    resetForm(contributorForm, contributorFormMock)
+    resetForm(contributorForm, contributorFormDefaults)
   }
 
   currentScreen.value = screen
@@ -256,6 +278,10 @@ const loadProfessions = async (search = '') => {
   professions.value = [...merged.values()]
 }
 
+const loadExpenseCategories = async () => {
+  expenseCategories.value = await api.get('/categorias-despesa')
+}
+
 const searchProfessions = (search) => {
   clearTimeout(professionSearchTimer)
 
@@ -290,6 +316,7 @@ const loadInitialData = async () => {
       loadDashboard(),
       loadContributors(),
       loadProfessions(),
+      loadExpenseCategories(),
       loadFinance()
     ]
 
@@ -394,7 +421,7 @@ const saveScreen = async (screen) => {
       }
 
       const wasEditing = Boolean(editingUserId.value)
-      resetForm(userForm, userFormMock)
+      resetForm(userForm, userFormDefaults)
       await loadUsers()
       editingUserId.value = null
       currentScreen.value = 'user-consultation'
@@ -455,7 +482,7 @@ const saveScreen = async (screen) => {
     }
 
     const wasEditing = Boolean(editingContributorId.value)
-    resetForm(contributorForm, contributorFormMock)
+    resetForm(contributorForm, contributorFormDefaults)
     await Promise.all([loadContributors(), loadDashboard()])
     editingContributorId.value = null
     currentScreen.value = 'contributor-consultation'
@@ -508,7 +535,7 @@ const cancelProfile = () => {
 
 const cancelScreen = (screen) => {
   if (screen === 'user-registration') {
-    resetForm(userForm, userFormMock)
+    resetForm(userForm, userFormDefaults)
     if (editingUserId.value) {
       editingUserId.value = null
       currentScreen.value = 'user-consultation'
@@ -516,7 +543,7 @@ const cancelScreen = (screen) => {
       return
     }
   } else {
-    resetForm(contributorForm, contributorFormMock)
+    resetForm(contributorForm, contributorFormDefaults)
     if (editingContributorId.value) {
       editingContributorId.value = null
       currentScreen.value = 'contributor-consultation'
@@ -583,17 +610,38 @@ const editRow = (row) => {
   feedback.value = ''
 }
 
-const deleteRow = async (row) => {
+const requestDeleteRow = (row) => {
+  deleteConfirmation.visible = true
+  deleteConfirmation.type = currentScreen.value === 'user-consultation' ? 'user' : 'contributor'
+  deleteConfirmation.row = row
+  feedback.value = ''
+}
+
+const cancelDeleteRow = () => {
+  deleteConfirmation.visible = false
+  deleteConfirmation.type = ''
+  deleteConfirmation.row = null
+}
+
+const confirmDeleteRow = async () => {
+  const row = deleteConfirmation.row
+
+  if (!row) {
+    cancelDeleteRow()
+    return
+  }
+
   try {
-    if (currentScreen.value === 'user-consultation') {
+    if (deleteConfirmation.type === 'user') {
       await api.delete(`/usuarios/${row.id}`)
       await loadUsers()
-    } else if (currentScreen.value === 'contributor-consultation') {
+    } else if (deleteConfirmation.type === 'contributor') {
       await api.delete(`/contribuintes/${row.id}`)
       await Promise.all([loadContributors(), loadDashboard()])
     }
 
     feedback.value = `${row.name} excluído com sucesso.`
+    cancelDeleteRow()
   } catch (error) {
     feedback.value = error.message
   }
@@ -622,7 +670,7 @@ const saveFinance = async (screen) => {
         usuarioCadastroId: currentUser.value?.id,
         contribuinteId: contributor.id
       })
-      resetForm(financeContributionForm, financeContributionFormMock)
+      resetForm(financeContributionForm, financeContributionFormDefaults)
       await Promise.all([loadFinance(), loadDashboard()])
       feedback.value = 'Contribuição adicionada com sucesso.'
       return
@@ -636,7 +684,7 @@ const saveFinance = async (screen) => {
         observacao: financeOfferingForm.observation,
         usuarioCadastroId: currentUser.value?.id
       })
-      resetForm(financeOfferingForm, financeOfferingFormMock)
+      resetForm(financeOfferingForm, financeOfferingFormDefaults)
       await Promise.all([loadFinance(), loadDashboard()])
       feedback.value = 'Oferta adicionada com sucesso.'
       return
@@ -649,7 +697,7 @@ const saveFinance = async (screen) => {
       dataDespesa: toIsoDate(financeExpenseForm.date),
       usuarioId: currentUser.value?.id
     })
-    resetForm(financeExpenseForm, financeExpenseFormMock)
+    resetForm(financeExpenseForm, financeExpenseFormDefaults)
     await Promise.all([loadFinance(), loadDashboard()])
     feedback.value = 'Despesa adicionada com sucesso.'
   } catch (error) {
@@ -659,11 +707,11 @@ const saveFinance = async (screen) => {
 
 const cancelFinance = (screen) => {
   if (screen === 'finance-contribution') {
-    resetForm(financeContributionForm, financeContributionFormMock)
+    resetForm(financeContributionForm, financeContributionFormDefaults)
   } else if (screen === 'finance-offering') {
-    resetForm(financeOfferingForm, financeOfferingFormMock)
+    resetForm(financeOfferingForm, financeOfferingFormDefaults)
   } else {
-    resetForm(financeExpenseForm, financeExpenseFormMock)
+    resetForm(financeExpenseForm, financeExpenseFormDefaults)
   }
 
   feedback.value = 'Lançamento financeiro limpo.'
@@ -725,7 +773,7 @@ onMounted(() => {
     />
 
     <div class="app-content">
-      <TopBar @open-profile="openProfile" />
+      <TopBar :user="currentUser" @open-profile="openProfile" />
 
       <main class="dashboard-panel" :class="{ 'dashboard-panel--tight': currentScreen !== 'dashboard' }">
         <template v-if="currentScreen === 'dashboard'">
@@ -789,7 +837,7 @@ onMounted(() => {
             :headers="userConsultationHeaders"
             :rows="filteredUserRows"
             @edit="editRow"
-            @delete="deleteRow"
+            @delete="requestDeleteRow"
           />
         </template>
 
@@ -803,7 +851,7 @@ onMounted(() => {
             :headers="contributorConsultationHeaders"
             :rows="filteredContributorRows"
             @edit="editRow"
-            @delete="deleteRow"
+            @delete="requestDeleteRow"
           />
         </template>
 
@@ -861,13 +909,40 @@ onMounted(() => {
 
         <section v-else class="screen-panel screen-panel--placeholder">
           <div class="placeholder-card">
-            <h2>Tela em preparação</h2>
-            <p>Essa área ainda está mockada, mas a navegação já segue o protótipo.</p>
+            <h2>Tela indisponível</h2>
+            <p>Não foi possível carregar esta área do sistema.</p>
           </div>
         </section>
 
         <p v-if="feedback" class="feedback-banner">{{ feedback }}</p>
       </main>
+
+      <div v-if="deleteConfirmation.visible" class="modal-backdrop" role="presentation">
+        <section
+          class="confirmation-modal"
+          role="dialog"
+          aria-modal="true"
+          :aria-labelledby="deleteConfirmation.type === 'user' ? 'delete-user-title' : 'delete-contributor-title'"
+        >
+          <h2 :id="deleteConfirmation.type === 'user' ? 'delete-user-title' : 'delete-contributor-title'">
+            {{ deleteConfirmationTitle }}
+          </h2>
+          <p>{{ deleteConfirmationMessage }}</p>
+
+          <div class="confirmation-modal__actions">
+            <button type="button" class="confirmation-modal__button" @click="cancelDeleteRow">
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="confirmation-modal__button confirmation-modal__button--danger"
+              @click="confirmDeleteRow"
+            >
+              Excluir
+            </button>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>
