@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../auth/auth-user.type';
 import { Roles } from '../auth/roles.decorator';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
@@ -6,16 +7,17 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { NivelAcesso } from './usuario.entity';
 import { UsuarioService } from './usuario.service';
 
+@ApiTags('Usuarios')
 @Controller('usuarios')
 export class UsuarioController {
   constructor(private readonly service: UsuarioService) {}
 
-  @Get('me')
+  @Get('perfil')
   findMe(@Req() request: { user: AuthUser }) {
     return this.service.findOne(request.user.id);
   }
 
-  @Patch('me')
+  @Patch('perfil')
   updateMe(
     @Req() request: { user: AuthUser },
     @Body() dto: UpdateUsuarioDto,

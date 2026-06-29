@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import ActionButton from './components/ActionButton.vue'
 import BirthdaysCard from './components/BirthdaysCard.vue'
 import ConsultationTable from './components/ConsultationTable.vue'
@@ -55,6 +55,9 @@ const reportForm = reactive({ ...reportFormDefaults })
 
 const feedback = ref('')
 const loginFeedback = ref('')
+const feedbackDuration = 4000
+let feedbackTimer
+let loginFeedbackTimer
 const userSearch = ref('')
 const contributorSearch = ref('')
 const currentUser = ref(null)
@@ -298,6 +301,36 @@ const searchProfessions = (search) => {
 
 const formatProfessionOption = (profession) => profession.nome
 
+const scheduleFeedbackClear = (message, timer, clear) => {
+  clearTimeout(timer)
+
+  if (!message) {
+    return null
+  }
+
+  return setTimeout(clear, feedbackDuration)
+}
+
+watch(feedback, (message) => {
+  feedbackTimer = scheduleFeedbackClear(
+    message,
+    feedbackTimer,
+    () => {
+      feedback.value = ''
+    }
+  )
+})
+
+watch(loginFeedback, (message) => {
+  loginFeedbackTimer = scheduleFeedbackClear(
+    message,
+    loginFeedbackTimer,
+    () => {
+      loginFeedback.value = ''
+    }
+  )
+})
+
 const loadFinance = async () => {
   const [contributionData, offeringData, expenseData] = await Promise.all([
     api.get('/contribuicoes'),
@@ -503,7 +536,7 @@ const saveProfile = async () => {
   }
 
   try {
-    const updated = await api.patch('/usuarios/me', {
+    const updated = await api.patch('/usuarios/perfil', {
       nomeCompleto: profileForm.fullName,
       nomeDeUsuario: profileForm.username,
       email: profileForm.email,
@@ -730,7 +763,7 @@ const generateReport = async () => {
 
 onMounted(() => {
   if (authToken.get()) {
-    api.get('/usuarios/me')
+    api.get('/usuarios/perfil')
       .then(async (usuario) => {
         currentUser.value = usuario
         Object.assign(profileForm, {

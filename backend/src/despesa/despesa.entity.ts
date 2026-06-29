@@ -24,12 +24,14 @@ export class Despesa {
 
   @ManyToOne(() => CategoriaDespesa, (categoria) => categoria.despesas, {
     eager: true,
+    nullable: true,
   })
   @JoinColumn({ name: 'fk_id_categoria_despesa' })
-  categoria: CategoriaDespesa;
+  categoria?: CategoriaDespesa;
 
   @ManyToOne(() => Usuario, (usuario) => usuario.despesas, {
     eager: true,
+    nullable: false,
   })
   @JoinColumn({ name: 'fk_id_usuario' })
   usuario: Usuario;

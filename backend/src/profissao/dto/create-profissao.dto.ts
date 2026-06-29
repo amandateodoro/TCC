@@ -1,10 +1,16 @@
-import { IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class CreateProfissaoDto {
+  @ApiProperty({
+    description: 'Obrigatorio. Nome da profissao.',
+  })
   @IsString()
   nome: string;
 
-  @IsOptional()
+  @ApiProperty({
+    description: 'Obrigatorio. Codigo CBO da profissao.',
+  })
   @IsString()
-  codigoCbo?: string;
+  codigoCbo: string;
 }

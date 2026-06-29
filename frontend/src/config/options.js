@@ -5,13 +5,8 @@ export const contributionTypeOptions = [
 
 export const celebrationTypeOptions = [
   "Santa Missa",
-  "Celebração dominical",
-  "Celebração especial",
-  "Novena",
-  "Batismo",
-  "Primeira Comunhão",
-  "Crima",
-  "Casamento"
+  "Celebração da palavra",
+  "Celebração especial"
 ];
 
 export const paymentMethodOptions = [
@@ -22,6 +17,6 @@ export const paymentMethodOptions = [
 
 export const reportTypeOptions = [
   "Aniversariantes",
-  "Contribuições",
+  "Receitas",
   "Despesas",
 ];

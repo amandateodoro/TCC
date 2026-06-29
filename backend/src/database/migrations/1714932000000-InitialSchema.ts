@@ -17,18 +17,20 @@ export class InitialSchema1714932000000 implements MigrationInterface {
         \`email\` varchar(120) NOT NULL,
         \`nivel_acesso\` enum ('Administrador', 'Secretaria') NOT NULL DEFAULT 'Secretaria',
         \`telefone\` varchar(20) NULL,
-        UNIQUE INDEX \`IDX_usuario_nome_de_usuario\` (\`nome_de_usuario\`),
-        UNIQUE INDEX \`IDX_usuario_email\` (\`email\`),
+        UNIQUE INDEX \`IDX_fd8d246bb703b653b7714bbb02\` (\`nome_de_usuario\`),
+        UNIQUE INDEX \`IDX_2863682842e688ca198eb25c12\` (\`email\`),
         PRIMARY KEY (\`id_usuario\`)
       ) ENGINE=InnoDB
     `);
 
     await queryRunner.query(`
-      CREATE TABLE \`profissao_contribuinte\` (
-        \`id_profissao_contribuinte\` int NOT NULL AUTO_INCREMENT,
-        \`nome_profissao\` varchar(80) NOT NULL,
-        UNIQUE INDEX \`IDX_profissao_nome\` (\`nome_profissao\`),
-        PRIMARY KEY (\`id_profissao_contribuinte\`)
+      CREATE TABLE \`profissao\` (
+        \`id_profissao\` int NOT NULL AUTO_INCREMENT,
+        \`nome_profissao\` varchar(255) NOT NULL,
+        \`codigo_cbo\` varchar(10) NOT NULL,
+        UNIQUE INDEX \`IDX_d12076e68c3bedc97b50bb05ad\` (\`codigo_cbo\`),
+        INDEX \`IDX_profissao_nome\` (\`nome_profissao\`),
+        PRIMARY KEY (\`id_profissao\`)
       ) ENGINE=InnoDB
     `);
 
@@ -36,7 +38,7 @@ export class InitialSchema1714932000000 implements MigrationInterface {
       CREATE TABLE \`categoria_despesa\` (
         \`id_categoria_despesa\` int NOT NULL AUTO_INCREMENT,
         \`nome_categoria\` varchar(80) NOT NULL,
-        UNIQUE INDEX \`IDX_categoria_despesa_nome\` (\`nome_categoria\`),
+        UNIQUE INDEX \`IDX_cc2c324cb73631f6d5add7feb6\` (\`nome_categoria\`),
         PRIMARY KEY (\`id_categoria_despesa\`)
       ) ENGINE=InnoDB
     `);
@@ -49,14 +51,19 @@ export class InitialSchema1714932000000 implements MigrationInterface {
         \`telefone\` varchar(20) NULL,
         \`data_de_nascimento\` date NULL,
         \`casado\` tinyint NOT NULL DEFAULT 0,
-        \`nome_conjuge\` varchar(120) NULL,
-        \`telefone_conjuge\` varchar(20) NULL,
-        \`data_nascimento_conjuge\` date NULL,
-        \`fk_id_profissao_contribuinte\` int NULL,
-        \`fk_id_usuario\` int NULL,
-        INDEX \`IDX_contribuinte_profissao\` (\`fk_id_profissao_contribuinte\`),
-        INDEX \`IDX_contribuinte_usuario\` (\`fk_id_usuario\`),
+        \`fk_id_conjuge\` int NULL,
+        UNIQUE INDEX \`REL_5f1e099807c87db6f159fdd281\` (\`fk_id_conjuge\`),
         PRIMARY KEY (\`id_contribuinte\`)
+      ) ENGINE=InnoDB
+    `);
+
+    await queryRunner.query(`
+      CREATE TABLE \`profissao_contribuinte\` (
+        \`fk_id_profissao\` int NOT NULL,
+        \`fk_id_contribuinte\` int NOT NULL,
+        INDEX \`IDX_ff22b7a6db84d4b84001fff0a8\` (\`fk_id_profissao\`),
+        INDEX \`IDX_f8b33f0fd48f46d0c0e2d516e2\` (\`fk_id_contribuinte\`),
+        PRIMARY KEY (\`fk_id_profissao\`, \`fk_id_contribuinte\`)
       ) ENGINE=InnoDB
     `);
 
@@ -69,7 +76,7 @@ export class InitialSchema1714932000000 implements MigrationInterface {
         \`data_de_pagamento\` date NOT NULL,
         \`observacao\` varchar(255) NULL,
         \`fk_id_usuario\` int NULL,
-        INDEX \`IDX_contribuicao_usuario\` (\`fk_id_usuario\`),
+        \`fk_id_contribuinte\` int NOT NULL,
         PRIMARY KEY (\`id_contribuicao\`)
       ) ENGINE=InnoDB
     `);
@@ -80,8 +87,8 @@ export class InitialSchema1714932000000 implements MigrationInterface {
         \`valor_despesa\` decimal(10,2) NOT NULL,
         \`data_despesa\` date NOT NULL,
         \`descricao_despesa\` varchar(255) NULL,
-        \`fk_id_categoria_despesa\` int NOT NULL,
-        INDEX \`IDX_despesa_categoria\` (\`fk_id_categoria_despesa\`),
+        \`fk_id_categoria_despesa\` int NULL,
+        \`fk_id_usuario\` int NOT NULL,
         PRIMARY KEY (\`id_despesa\`)
       ) ENGINE=InnoDB
     `);
@@ -94,126 +101,119 @@ export class InitialSchema1714932000000 implements MigrationInterface {
         \`data_oferta\` date NOT NULL,
         \`observacao\` varchar(255) NULL,
         \`fk_id_usuario\` int NULL,
-        INDEX \`IDX_oferta_usuario\` (\`fk_id_usuario\`),
         PRIMARY KEY (\`id_oferta\`)
       ) ENGINE=InnoDB
     `);
 
     await queryRunner.query(`
-      CREATE TABLE \`contribuinte_contribuicao\` (
-        \`fk_id_contribuicao\` int NOT NULL,
-        \`fk_id_contribuinte\` int NOT NULL,
-        INDEX \`IDX_contribuinte_contribuicao_contribuicao\` (\`fk_id_contribuicao\`),
-        INDEX \`IDX_contribuinte_contribuicao_contribuinte\` (\`fk_id_contribuinte\`),
-        PRIMARY KEY (\`fk_id_contribuicao\`, \`fk_id_contribuinte\`)
-      ) ENGINE=InnoDB
-    `);
-
-    await queryRunner.query(`
-      CREATE TABLE \`usuario_despesa\` (
-        \`fk_id_despesa\` int NOT NULL,
-        \`fk_id_usuario\` int NOT NULL,
-        INDEX \`IDX_usuario_despesa_despesa\` (\`fk_id_despesa\`),
-        INDEX \`IDX_usuario_despesa_usuario\` (\`fk_id_usuario\`),
-        PRIMARY KEY (\`fk_id_despesa\`, \`fk_id_usuario\`)
-      ) ENGINE=InnoDB
-    `);
-
-    await queryRunner.query(`
       ALTER TABLE \`contribuinte\`
-      ADD CONSTRAINT \`FK_contribuinte_profissao\`
-      FOREIGN KEY (\`fk_id_profissao_contribuinte\`)
-      REFERENCES \`profissao_contribuinte\`(\`id_profissao_contribuinte\`)
-      ON DELETE SET NULL ON UPDATE CASCADE
+      ADD CONSTRAINT \`FK_5f1e099807c87db6f159fdd2813\`
+      FOREIGN KEY (\`fk_id_conjuge\`)
+      REFERENCES \`contribuinte\`(\`id_contribuinte\`)
+      ON DELETE NO ACTION ON UPDATE NO ACTION
     `);
 
     await queryRunner.query(`
-      ALTER TABLE \`contribuinte\`
-      ADD CONSTRAINT \`FK_contribuinte_usuario\`
-      FOREIGN KEY (\`fk_id_usuario\`)
-      REFERENCES \`usuario\`(\`id_usuario\`)
-      ON DELETE SET NULL ON UPDATE CASCADE
+      ALTER TABLE \`profissao_contribuinte\`
+      ADD CONSTRAINT \`FK_ff22b7a6db84d4b84001fff0a8c\`
+      FOREIGN KEY (\`fk_id_profissao\`)
+      REFERENCES \`profissao\`(\`id_profissao\`)
+      ON DELETE NO ACTION ON UPDATE NO ACTION
     `);
 
     await queryRunner.query(`
-      ALTER TABLE \`contribuicao\`
-      ADD CONSTRAINT \`FK_contribuicao_usuario\`
-      FOREIGN KEY (\`fk_id_usuario\`)
-      REFERENCES \`usuario\`(\`id_usuario\`)
-      ON DELETE SET NULL ON UPDATE CASCADE
-    `);
-
-    await queryRunner.query(`
-      ALTER TABLE \`despesa\`
-      ADD CONSTRAINT \`FK_despesa_categoria\`
-      FOREIGN KEY (\`fk_id_categoria_despesa\`)
-      REFERENCES \`categoria_despesa\`(\`id_categoria_despesa\`)
-      ON DELETE RESTRICT ON UPDATE CASCADE
-    `);
-
-    await queryRunner.query(`
-      ALTER TABLE \`oferta\`
-      ADD CONSTRAINT \`FK_oferta_usuario\`
-      FOREIGN KEY (\`fk_id_usuario\`)
-      REFERENCES \`usuario\`(\`id_usuario\`)
-      ON DELETE SET NULL ON UPDATE CASCADE
-    `);
-
-    await queryRunner.query(`
-      ALTER TABLE \`contribuinte_contribuicao\`
-      ADD CONSTRAINT \`FK_contribuinte_contribuicao_contribuicao\`
-      FOREIGN KEY (\`fk_id_contribuicao\`)
-      REFERENCES \`contribuicao\`(\`id_contribuicao\`)
-      ON DELETE CASCADE ON UPDATE CASCADE
-    `);
-
-    await queryRunner.query(`
-      ALTER TABLE \`contribuinte_contribuicao\`
-      ADD CONSTRAINT \`FK_contribuinte_contribuicao_contribuinte\`
+      ALTER TABLE \`profissao_contribuinte\`
+      ADD CONSTRAINT \`FK_f8b33f0fd48f46d0c0e2d516e27\`
       FOREIGN KEY (\`fk_id_contribuinte\`)
       REFERENCES \`contribuinte\`(\`id_contribuinte\`)
       ON DELETE CASCADE ON UPDATE CASCADE
     `);
 
     await queryRunner.query(`
-      ALTER TABLE \`usuario_despesa\`
-      ADD CONSTRAINT \`FK_usuario_despesa_despesa\`
-      FOREIGN KEY (\`fk_id_despesa\`)
-      REFERENCES \`despesa\`(\`id_despesa\`)
-      ON DELETE CASCADE ON UPDATE CASCADE
+      ALTER TABLE \`contribuicao\`
+      ADD CONSTRAINT \`FK_5533e42fbbf6b8ec9fc165b2b61\`
+      FOREIGN KEY (\`fk_id_usuario\`)
+      REFERENCES \`usuario\`(\`id_usuario\`)
+      ON DELETE NO ACTION ON UPDATE NO ACTION
     `);
 
     await queryRunner.query(`
-      ALTER TABLE \`usuario_despesa\`
-      ADD CONSTRAINT \`FK_usuario_despesa_usuario\`
+      ALTER TABLE \`contribuicao\`
+      ADD CONSTRAINT \`FK_f05449b864ac5b5d949a3741e26\`
+      FOREIGN KEY (\`fk_id_contribuinte\`)
+      REFERENCES \`contribuinte\`(\`id_contribuinte\`)
+      ON DELETE NO ACTION ON UPDATE NO ACTION
+    `);
+
+    await queryRunner.query(`
+      ALTER TABLE \`despesa\`
+      ADD CONSTRAINT \`FK_dde956e044c198aaed1b1835fe7\`
+      FOREIGN KEY (\`fk_id_categoria_despesa\`)
+      REFERENCES \`categoria_despesa\`(\`id_categoria_despesa\`)
+      ON DELETE NO ACTION ON UPDATE NO ACTION
+    `);
+
+    await queryRunner.query(`
+      ALTER TABLE \`despesa\`
+      ADD CONSTRAINT \`FK_2548de4d73e1bb0236c13f9f4c6\`
       FOREIGN KEY (\`fk_id_usuario\`)
       REFERENCES \`usuario\`(\`id_usuario\`)
-      ON DELETE CASCADE ON UPDATE CASCADE
+      ON DELETE NO ACTION ON UPDATE NO ACTION
+    `);
+
+    await queryRunner.query(`
+      ALTER TABLE \`oferta\`
+      ADD CONSTRAINT \`FK_e27835f11efb9a2ed517b46fc7f\`
+      FOREIGN KEY (\`fk_id_usuario\`)
+      REFERENCES \`usuario\`(\`id_usuario\`)
+      ON DELETE NO ACTION ON UPDATE NO ACTION
+    `);
+
+    await queryRunner.query(`
+      INSERT INTO \`usuario\`
+        (\`nome_completo\`, \`nome_de_usuario\`, \`senha\`, \`email\`, \`nivel_acesso\`, \`telefone\`)
+      VALUES
+        (
+          'Administrador',
+          'admin',
+          '$2b$10$C/CAjG81jw.qWi8zBv5QbewEworGnv1hz/4gIHpvcpToUXKNs2u.e',
+          'admin@tcc.local',
+          'Administrador',
+          NULL
+        )
+    `);
+
+    await queryRunner.query(`
+      INSERT INTO \`categoria_despesa\` (\`nome_categoria\`)
+      VALUES
+        ('Água e Energia'),
+        ('Limpeza e Higiene'),
+        ('Material de Escritório'),
+        ('Manutenção'),
+        ('Alimentação')
     `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query('ALTER TABLE `usuario_despesa` DROP FOREIGN KEY `FK_usuario_despesa_usuario`');
-    await queryRunner.query('ALTER TABLE `usuario_despesa` DROP FOREIGN KEY `FK_usuario_despesa_despesa`');
+    await queryRunner.query('ALTER TABLE `oferta` DROP FOREIGN KEY `FK_e27835f11efb9a2ed517b46fc7f`');
+    await queryRunner.query('ALTER TABLE `despesa` DROP FOREIGN KEY `FK_2548de4d73e1bb0236c13f9f4c6`');
+    await queryRunner.query('ALTER TABLE `despesa` DROP FOREIGN KEY `FK_dde956e044c198aaed1b1835fe7`');
+    await queryRunner.query('ALTER TABLE `contribuicao` DROP FOREIGN KEY `FK_f05449b864ac5b5d949a3741e26`');
+    await queryRunner.query('ALTER TABLE `contribuicao` DROP FOREIGN KEY `FK_5533e42fbbf6b8ec9fc165b2b61`');
     await queryRunner.query(
-      'ALTER TABLE `contribuinte_contribuicao` DROP FOREIGN KEY `FK_contribuinte_contribuicao_contribuinte`',
+      'ALTER TABLE `profissao_contribuinte` DROP FOREIGN KEY `FK_f8b33f0fd48f46d0c0e2d516e27`',
     );
     await queryRunner.query(
-      'ALTER TABLE `contribuinte_contribuicao` DROP FOREIGN KEY `FK_contribuinte_contribuicao_contribuicao`',
+      'ALTER TABLE `profissao_contribuinte` DROP FOREIGN KEY `FK_ff22b7a6db84d4b84001fff0a8c`',
     );
-    await queryRunner.query('ALTER TABLE `oferta` DROP FOREIGN KEY `FK_oferta_usuario`');
-    await queryRunner.query('ALTER TABLE `despesa` DROP FOREIGN KEY `FK_despesa_categoria`');
-    await queryRunner.query('ALTER TABLE `contribuicao` DROP FOREIGN KEY `FK_contribuicao_usuario`');
-    await queryRunner.query('ALTER TABLE `contribuinte` DROP FOREIGN KEY `FK_contribuinte_usuario`');
-    await queryRunner.query('ALTER TABLE `contribuinte` DROP FOREIGN KEY `FK_contribuinte_profissao`');
-    await queryRunner.query('DROP TABLE `usuario_despesa`');
-    await queryRunner.query('DROP TABLE `contribuinte_contribuicao`');
+    await queryRunner.query('ALTER TABLE `contribuinte` DROP FOREIGN KEY `FK_5f1e099807c87db6f159fdd2813`');
     await queryRunner.query('DROP TABLE `oferta`');
     await queryRunner.query('DROP TABLE `despesa`');
     await queryRunner.query('DROP TABLE `contribuicao`');
+    await queryRunner.query('DROP TABLE `profissao_contribuinte`');
     await queryRunner.query('DROP TABLE `contribuinte`');
     await queryRunner.query('DROP TABLE `categoria_despesa`');
-    await queryRunner.query('DROP TABLE `profissao_contribuinte`');
+    await queryRunner.query('DROP TABLE `profissao`');
     await queryRunner.query('DROP TABLE `usuario`');
   }
 }

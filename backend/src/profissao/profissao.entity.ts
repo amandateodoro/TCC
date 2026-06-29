@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Contribuinte } from '../contribuinte/contribuinte.entity';
 
 @Entity('profissao')
+@Index('IDX_profissao_nome', ['nome'])
 export class Profissao {
   @PrimaryGeneratedColumn({ name: 'id_profissao' })
   id: number;
@@ -13,10 +14,9 @@ export class Profissao {
     name: 'codigo_cbo',
     type: 'varchar',
     length: 10,
-    nullable: true,
     unique: true,
   })
-  codigoCbo?: string | null;
+  codigoCbo: string;
 
   @ManyToMany(() => Contribuinte, (contribuinte) => contribuinte.profissoes)
   contribuintes: Contribuinte[];

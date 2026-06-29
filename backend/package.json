@@ -14,6 +14,7 @@
     "migration:run": "npm run db:create && npm run typeorm -- migration:run -d src/database/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/database/data-source.ts",
     "migration:show": "npm run typeorm -- migration:show -d src/database/data-source.ts",
+    "db:setup": "npm run migration:run && npm run profissao:import",
     "profissao:import": "npm run db:create && ts-node -r tsconfig-paths/register src/profissao/import-cbo.ts"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "@nestjs/mapped-types": "^2.0.6",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/swagger": "^7.4.2",
     "@nestjs/typeorm": "^10.0.2",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
@@ -34,6 +36,7 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {

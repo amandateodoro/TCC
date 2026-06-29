@@ -13,12 +13,11 @@ export class ProfissaoService {
   findAll(search?: string, limit = 20) {
     const query = this.repository
       .createQueryBuilder('profissao')
-      .where('profissao.codigo_cbo IS NOT NULL')
       .orderBy('profissao.nome', 'ASC')
       .take(Math.min(Math.max(limit, 1), 100));
 
     if (search?.trim()) {
-      query.andWhere(
+      query.where(
         new Brackets((builder) => {
           builder
             .where('profissao.nome LIKE :search', {

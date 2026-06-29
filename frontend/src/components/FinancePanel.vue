@@ -61,6 +61,7 @@ const emit = defineEmits(['save', 'cancel'])
             v-model="form.contributor"
             label="Contribuinte"
             placeholder="Nome do contribuinte"
+            as="combobox"
             :list-options="contributorOptions"
             class="field-span-2"
           />

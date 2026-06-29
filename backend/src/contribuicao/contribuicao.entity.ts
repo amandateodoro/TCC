@@ -42,6 +42,7 @@ export class Contribuicao {
 
   @ManyToOne(() => Contribuinte, (contribuinte) => contribuinte.contribuicoes, {
     eager: true,
+    nullable: false,
   })
   @JoinColumn({ name: 'fk_id_contribuinte' })
   contribuinte: Contribuinte;
