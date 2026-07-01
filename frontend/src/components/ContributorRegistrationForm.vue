@@ -23,6 +23,10 @@ const emit = defineEmits(['save', 'cancel', 'profession-search'])
 <template>
   <section class="screen-panel screen-panel--form">
     <div class="form-card">
+      <header class="form-card__header">
+        <h2>Dados do contribuinte</h2>
+        <p>Preencha as informacoes para cadastrar um novo contribuinte.</p>
+      </header>
       <div class="form-grid form-grid--contributor">
         <FormField v-model="form.fullName" label="Nome completo" placeholder="Nome" class="field-span-2" />
         <FormField v-model="form.address" label="Endereço" placeholder="Ex: Rua JK, n°..." class="field-span-2" />

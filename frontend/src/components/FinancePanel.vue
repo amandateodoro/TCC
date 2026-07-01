@@ -55,6 +55,10 @@ const emit = defineEmits(['save', 'cancel'])
 <template>
   <section class="screen-panel finance-panel">
     <div class="form-card finance-card">
+      <header class="form-card__header">
+        <h2>Lancamento financeiro</h2>
+        <p>Registre um novo lancamento e acompanhe os registros do dia.</p>
+      </header>
       <div class="finance-form-grid" :class="`finance-form-grid--${variant}`">
         <template v-if="variant === 'contribution'">
           <FormField
@@ -182,7 +186,9 @@ const emit = defineEmits(['save', 'cancel'])
         >
           <div v-if="variant === 'contribution'" class="consultation-table__cell">{{ row.contributor }}</div>
           <div v-if="variant === 'contribution'" class="consultation-table__cell">{{ row.amount }}</div>
-          <div class="consultation-table__cell">{{ row.category }}</div>
+          <div class="consultation-table__cell">
+            <span class="badge badge--category">{{ row.category }}</span>
+          </div>
           <div class="consultation-table__cell">{{ row.observation }}</div>
           <div class="consultation-table__cell">{{ row.paymentDate }}</div>
           <div v-if="variant !== 'contribution'" class="consultation-table__cell">{{ row.amount }}</div>

@@ -18,11 +18,13 @@ defineProps({
 </script>
 
 <template>
-  <article class="stat-card">
-    <div class="stat-card__title">
-      <AppIcon :name="icon" />
-      <span>{{ label }}</span>
+  <article class="kpi-card">
+    <div class="kpi-card__info">
+      <span class="kpi-card__label">{{ label }}</span>
+      <strong class="kpi-card__value">{{ value }}</strong>
     </div>
-    <strong class="stat-card__value">{{ value }}</strong>
+    <span class="kpi-card__icon">
+      <AppIcon :name="icon" />
+    </span>
   </article>
 </template>

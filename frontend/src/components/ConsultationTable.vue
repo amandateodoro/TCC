@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import AppIcon from './AppIcon.vue'
+import FormField from './FormField.vue'
 
 const props = defineProps({
   searchLabel: {
@@ -56,20 +57,13 @@ const toggleNameSort = () => {
 
 <template>
   <section class="screen-panel consultation-panel">
-    <div class="consultation-search">
-      <label class="consultation-search__label">{{ searchLabel }}</label>
-      <div class="consultation-search__field">
-        <input
-          class="consultation-search__input"
-          :value="query"
-          :placeholder="searchPlaceholder"
-          @input="emit('update:query', $event.target.value)"
-        />
-        <button type="button" class="consultation-search__button" aria-label="Pesquisar">
-          <AppIcon name="search" />
-        </button>
-      </div>
-    </div>
+    <FormField
+      class="consultation-search"
+      :model-value="query"
+      :label="searchLabel"
+      :placeholder="searchPlaceholder"
+      @update:model-value="emit('update:query', $event)"
+    />
 
     <div class="consultation-table-wrap">
       <p class="consultation-table__title">{{ tableTitle }}</p>
@@ -113,13 +107,20 @@ const toggleNameSort = () => {
             class="consultation-table__cell"
             :class="header.className"
           >
-            {{ row[header.key] }}
+            <span
+              v-if="header.key === 'accessLevel'"
+              class="badge"
+              :class="`badge--${String(row[header.key]).toLowerCase()}`"
+            >
+              {{ row[header.key] }}
+            </span>
+            <span v-else>{{ row[header.key] }}</span>
           </div>
           <div class="consultation-table__cell consultation-table__cell--actions">
-            <button type="button" class="icon-action" :aria-label="`Editar ${row.name}`" @click="emit('edit', row)">
+            <button type="button" class="consultation-table__action" :aria-label="`Editar ${row.name}`" @click="emit('edit', row)">
               <AppIcon name="edit" />
             </button>
-            <button type="button" class="icon-action" :aria-label="`Excluir ${row.name}`" @click="emit('delete', row)">
+            <button type="button" class="consultation-table__action" :aria-label="`Excluir ${row.name}`" @click="emit('delete', row)">
               <AppIcon name="trash" />
             </button>
           </div>

@@ -19,6 +19,10 @@ const emit = defineEmits(['generate'])
 <template>
   <section class="screen-panel report-panel">
     <div class="form-card report-card">
+      <header class="form-card__header">
+        <h2>Gerar relatorio</h2>
+        <p>Selecione o tipo e o periodo desejado.</p>
+      </header>
       <div class="report-grid">
         <FormField
           v-model="form.type"

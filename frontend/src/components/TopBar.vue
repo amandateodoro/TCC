@@ -1,41 +1,69 @@
 <script setup>
 import { computed } from 'vue'
+import AppIcon from './AppIcon.vue'
 
 const props = defineProps({
-  user: {
-    type: Object,
-    default: null
+  title: {
+    type: String,
+    required: true
+  },
+  username: {
+    type: String,
+    default: ''
+  },
+  userRole: {
+    type: String,
+    default: ''
   }
 })
 
 const emit = defineEmits(['open-profile'])
 
-const displayName = computed(() =>
-  props.user?.nomeDeUsuario || props.user?.nomeCompleto || 'Usuario'
-)
+const today = new Date().toLocaleDateString('pt-BR', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long'
+})
 
-const accessLevel = computed(() => props.user?.nivelAcesso || 'Perfil')
+const userInitials = computed(() => {
+  const value = props.username.trim()
 
-const initials = computed(() => {
-  const name = displayName.value.trim()
-  const parts = name.split(/\s+/).filter(Boolean)
-
-  if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+  if (!value) {
+    return '?'
   }
 
-  return name.slice(0, 2).toUpperCase()
+  const segments = value.split(/[._\s-]+/).filter(Boolean)
+
+  if (segments.length >= 2) {
+    return `${segments[0][0]}${segments[1][0]}`.toUpperCase()
+  }
+
+  return value.slice(0, 2).toUpperCase()
 })
 </script>
 
 <template>
   <header class="topbar">
-    <button type="button" class="profile-button" aria-label="Perfil do usuario" @click="emit('open-profile')">
-      <span class="profile-button__avatar" aria-hidden="true">{{ initials }}</span>
-      <span class="profile-button__text">
-        <span class="profile-button__name">{{ displayName }}</span>
-        <span class="profile-button__role">{{ accessLevel }}</span>
-      </span>
-    </button>
+    <div class="topbar__heading">
+      <h1 class="topbar__title">{{ title }}</h1>
+      <p class="topbar__date">{{ today }}</p>
+    </div>
+    <div class="topbar__actions">
+      <button type="button" class="topbar__bell" aria-label="Notificacoes">
+        <AppIcon name="bell" />
+      </button>
+      <button
+        type="button"
+        class="profile-button"
+        :aria-label="`Perfil de ${username || 'usuario'}`"
+        @click="emit('open-profile')"
+      >
+        <span class="profile-button__avatar">{{ userInitials }}</span>
+        <span class="profile-button__text">
+          <span class="profile-button__name">{{ username }}</span>
+          <span class="profile-button__role">{{ userRole }}</span>
+        </span>
+      </button>
+    </div>
   </header>
 </template>

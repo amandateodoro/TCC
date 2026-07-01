@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import crossIcon from '../assets/icons/cruz.png'
+import AppIcon from './AppIcon.vue'
 import heroImage from '../assets/login-hero.jpg'
 
 defineProps({
@@ -45,7 +45,7 @@ const showPassword = ref(false)
       <div class="login-panel">
         <div class="login-brand">
           <div class="login-brand__mark">
-            <img :src="crossIcon" alt="" />
+            <AppIcon name="church" :size="42" :stroke-width="1.75" />
           </div>
           <div class="login-brand__text">
             <span>Comunidade</span>
