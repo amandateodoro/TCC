@@ -67,7 +67,7 @@ onBeforeUnmount(() => chart?.destroy())
 
 <template>
   <article class="chart-card chart-card--wide">
-    <h3 class="chart-card__title">Arrecadacao nos ultimos 6 meses</h3>
+    <h3 class="chart-card__title">Arrecadação nos últimos 6 meses</h3>
     <div class="chart-card__body chart-card__body--line">
       <canvas ref="canvas"></canvas>
     </div>

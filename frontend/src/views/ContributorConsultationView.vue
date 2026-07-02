@@ -1,11 +1,15 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import AppModal from '../components/AppModal.vue'
 import ConsultationTable from '../components/ConsultationTable.vue'
 import { showToast } from '../composables/useToast.js'
 import { api, formatDate } from '../services/api.js'
 
+const router = useRouter()
 const contributorSearch = ref('')
 const contributors = ref([])
+const selectedContributor = ref(null)
 
 const contributorConsultationHeaders = [
   { key: 'name', label: 'Nome' },
@@ -33,14 +37,29 @@ const loadContributors = async () => {
 }
 
 const editRow = (row) => {
-  showToast(`Edição de ${row.name} ainda será conectada em uma próxima etapa.`, 'warning')
+  router.push({ name: 'contributor-edit', params: { id: row.id } })
 }
 
-const deleteRow = async (row) => {
+const requestDeleteRow = (row) => {
+  selectedContributor.value = row
+}
+
+const cancelDeleteRow = () => {
+  selectedContributor.value = null
+}
+
+const confirmDeleteRow = async () => {
+  if (!selectedContributor.value) {
+    return
+  }
+
+  const row = selectedContributor.value
+
   try {
     await api.delete(`/contribuintes/${row.id}`)
     await loadContributors()
     showToast(`${row.name} excluído com sucesso.`, 'success')
+    cancelDeleteRow()
   } catch (error) {
     showToast(error.message, 'danger')
   }
@@ -65,6 +84,26 @@ onMounted(async () => {
     :headers="contributorConsultationHeaders"
     :rows="filteredContributorRows"
     @edit="editRow"
-    @delete="deleteRow"
+    @delete="requestDeleteRow"
   />
+
+  <AppModal
+    v-if="selectedContributor"
+    title="Excluir contribuinte"
+    :subtitle="selectedContributor.name"
+    @close="cancelDeleteRow"
+  >
+    <p>Deseja realmente excluir este contribuinte?</p>
+
+    <template #footer>
+      <div class="form-actions">
+        <button type="button" class="action-button action-button--compact action-button--secondary" @click="cancelDeleteRow">
+          Cancelar
+        </button>
+        <button type="button" class="action-button action-button--compact action-button--danger" @click="confirmDeleteRow">
+          Excluir
+        </button>
+      </div>
+    </template>
+  </AppModal>
 </template>

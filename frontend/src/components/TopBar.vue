@@ -55,7 +55,7 @@ const userInitials = computed(() => {
       <button
         type="button"
         class="profile-button"
-        :aria-label="`Perfil de ${username || 'usuario'}`"
+        :aria-label="`Perfil de ${username || 'usuário'}`"
         @click="emit('open-profile')"
       >
         <span class="profile-button__avatar">{{ userInitials }}</span>

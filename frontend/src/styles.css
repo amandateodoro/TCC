@@ -1184,6 +1184,18 @@ button {
   padding-inline: 1.35rem;
 }
 
+.action-button--secondary {
+  background: rgba(173, 136, 102, 0.12);
+  color: var(--brand-strong);
+  box-shadow: none;
+}
+
+.action-button--danger {
+  background: #b42318;
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(180, 35, 24, 0.16);
+}
+
 .action-button:hover {
   filter: brightness(1.03);
   transform: translateY(-1px);

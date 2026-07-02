@@ -1,11 +1,15 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import AppModal from '../components/AppModal.vue'
 import ConsultationTable from '../components/ConsultationTable.vue'
 import { showToast } from '../composables/useToast.js'
 import { api } from '../services/api.js'
 
+const router = useRouter()
 const userSearch = ref('')
 const users = ref([])
+const selectedUser = ref(null)
 
 const userConsultationHeaders = [
   { key: 'name', label: 'Nome' },
@@ -35,14 +39,29 @@ const loadUsers = async () => {
 }
 
 const editRow = (row) => {
-  showToast(`Edição de ${row.name} ainda será conectada em uma próxima etapa.`, 'warning')
+  router.push({ name: 'user-edit', params: { id: row.id } })
 }
 
-const deleteRow = async (row) => {
+const requestDeleteRow = (row) => {
+  selectedUser.value = row
+}
+
+const cancelDeleteRow = () => {
+  selectedUser.value = null
+}
+
+const confirmDeleteRow = async () => {
+  if (!selectedUser.value) {
+    return
+  }
+
+  const row = selectedUser.value
+
   try {
     await api.delete(`/usuarios/${row.id}`)
     await loadUsers()
     showToast(`${row.name} excluído com sucesso.`, 'success')
+    cancelDeleteRow()
   } catch (error) {
     showToast(error.message, 'danger')
   }
@@ -67,6 +86,26 @@ onMounted(async () => {
     :headers="userConsultationHeaders"
     :rows="filteredUserRows"
     @edit="editRow"
-    @delete="deleteRow"
+    @delete="requestDeleteRow"
   />
+
+  <AppModal
+    v-if="selectedUser"
+    title="Excluir usuário"
+    :subtitle="selectedUser.name"
+    @close="cancelDeleteRow"
+  >
+    <p>Deseja realmente excluir este usuário?</p>
+
+    <template #footer>
+      <div class="form-actions">
+        <button type="button" class="action-button action-button--compact action-button--secondary" @click="cancelDeleteRow">
+          Cancelar
+        </button>
+        <button type="button" class="action-button action-button--compact action-button--danger" @click="confirmDeleteRow">
+          Excluir
+        </button>
+      </div>
+    </template>
+  </AppModal>
 </template>

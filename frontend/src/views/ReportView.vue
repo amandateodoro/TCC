@@ -2,10 +2,11 @@
 import { reactive } from 'vue'
 import ReportPanel from '../components/ReportPanel.vue'
 import { showToast } from '../composables/useToast.js'
-import { reportFormMock, reportTypeOptions } from '../mock/appData.js'
+import { reportTypeOptions } from '../config/options.js'
+import { reportFormDefaults } from '../forms/defaultValues.js'
 import { api } from '../services/api.js'
 
-const reportForm = reactive({ ...reportFormMock })
+const reportForm = reactive({ ...reportFormDefaults })
 
 const generateReport = async () => {
   try {

@@ -22,8 +22,8 @@ const accessOptions = ['Administrador', 'Secretaria']
   <section class="screen-panel screen-panel--form">
     <div class="form-card">
       <header class="form-card__header">
-        <h2>Dados do usuario</h2>
-        <p>Preencha as informacoes para cadastrar um novo usuario.</p>
+        <h2>Dados do usuário</h2>
+        <p>Preencha as informações para cadastrar um novo usuário.</p>
       </header>
       <div class="form-grid form-grid--user">
         <FormField v-model="form.fullName" label="Nome completo" placeholder="Nome" class="field-span-2" />

@@ -4,7 +4,7 @@ import { RouterView, useRoute, useRouter } from 'vue-router'
 import SidebarNav from '../components/SidebarNav.vue'
 import TopBar from '../components/TopBar.vue'
 import { useAuth } from '../composables/useAuth.js'
-import { navigationItems, screenTitles } from '../mock/appData.js'
+import { navigationItems, screenTitles } from '../config/navigation.js'
 
 const route = useRoute()
 const router = useRouter()

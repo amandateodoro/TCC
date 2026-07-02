@@ -3,12 +3,13 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import FinancePanel from '../components/FinancePanel.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
-import { celebrationTypeOptions, financeOfferingFormMock } from '../mock/appData.js'
+import { celebrationTypeOptions } from '../config/options.js'
+import { financeOfferingFormDefaults } from '../forms/defaultValues.js'
 import { api, formatCurrency, formatDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()
 
-const financeOfferingForm = reactive({ ...financeOfferingFormMock })
+const financeOfferingForm = reactive({ ...financeOfferingFormDefaults })
 const offerings = ref([])
 
 const financeOfferingRows = computed(() =>
@@ -39,7 +40,7 @@ const save = async () => {
       observacao: financeOfferingForm.observation,
       usuarioCadastroId: currentUser.value?.id
     })
-    Object.assign(financeOfferingForm, financeOfferingFormMock)
+    Object.assign(financeOfferingForm, financeOfferingFormDefaults)
     await loadOfferings()
     showToast('Oferta adicionada com sucesso.', 'success')
   } catch (error) {
@@ -48,7 +49,7 @@ const save = async () => {
 }
 
 const cancel = () => {
-  Object.assign(financeOfferingForm, financeOfferingFormMock)
+  Object.assign(financeOfferingForm, financeOfferingFormDefaults)
   showToast('Lançamento financeiro limpo.')
 }
 

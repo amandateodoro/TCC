@@ -5,14 +5,14 @@ import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
 import {
   contributionTypeOptions,
-  financeContributionFormMock,
   paymentMethodOptions
-} from '../mock/appData.js'
+} from '../config/options.js'
+import { financeContributionFormDefaults } from '../forms/defaultValues.js'
 import { api, formatCurrency, formatDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()
 
-const financeContributionForm = reactive({ ...financeContributionFormMock })
+const financeContributionForm = reactive({ ...financeContributionFormDefaults })
 const contributions = ref([])
 const contributors = ref([])
 
@@ -67,7 +67,7 @@ const save = async () => {
       usuarioCadastroId: currentUser.value?.id,
       contribuinteIds: [contributor.id]
     })
-    Object.assign(financeContributionForm, financeContributionFormMock)
+    Object.assign(financeContributionForm, financeContributionFormDefaults)
     await loadContributions()
     showToast('Contribuição adicionada com sucesso.', 'success')
   } catch (error) {
@@ -76,7 +76,7 @@ const save = async () => {
 }
 
 const cancel = () => {
-  Object.assign(financeContributionForm, financeContributionFormMock)
+  Object.assign(financeContributionForm, financeContributionFormDefaults)
   showToast('Lançamento financeiro limpo.')
 }
 

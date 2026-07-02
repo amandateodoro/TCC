@@ -55,7 +55,7 @@ export class ContribuinteService {
   findAll(search?: string) {
     return this.repository.find({
       where: search ? { nomeCompleto: Like(`%${search}%`) } : {},
-      relations: { conjuge: true },
+      relations: { profissoes: true, conjuge: { profissoes: true } },
       order: { nomeCompleto: 'ASC' },
     });
   }
@@ -180,7 +180,7 @@ export class ContribuinteService {
   private async findWithSpouse(repository: Repository<Contribuinte>, id: number) {
     const contribuinte = await repository.findOne({
       where: { id },
-      relations: { conjuge: true },
+      relations: { profissoes: true, conjuge: { profissoes: true } },
     });
 
     if (!contribuinte) {

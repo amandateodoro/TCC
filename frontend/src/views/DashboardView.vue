@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ActionButton from '../components/ActionButton.vue'
@@ -9,11 +9,10 @@ import RevenueLineChart from '../components/RevenueLineChart.vue'
 import StatCard from '../components/StatCard.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
+import { quickActions } from '../config/navigation.js'
 import {
-  birthdays as birthdaysMock,
   expenseDistribution,
-  monthlyRevenueSeries,
-  quickActions
+  monthlyRevenueSeries
 } from '../mock/appData.js'
 import { api, formatCurrency, formatDate } from '../services/api.js'
 
@@ -24,7 +23,7 @@ const dashboard = ref(null)
 
 const firstName = computed(() => {
   const value = currentUser.value?.nomeDeUsuario ?? ''
-  return value.split(/[._\s-]+/)[0] || 'usuario'
+  return value.split(/[._\s-]+/)[0] || 'usuário'
 })
 
 const today = new Date().toLocaleDateString('pt-BR', {
@@ -43,28 +42,28 @@ const stats = computed(() => [
   },
   {
     id: 'amount',
-    label: 'Arrecadado no mes',
+    label: 'Arrecadado no mês',
     value: formatCurrency(dashboard.value?.totalArrecadadoMes ?? 0),
     icon: 'currency'
   },
   {
     id: 'offers',
-    label: 'Ofertas no mes',
+    label: 'Ofertas no mês',
     value: formatCurrency(dashboard.value?.totalOfertasMes ?? 0),
     icon: 'wallet'
   },
   {
     id: 'expenses',
-    label: 'Despesas no mes',
+    label: 'Despesas no mês',
     value: formatCurrency(dashboard.value?.totalDespesasMes ?? 0),
     icon: 'receipt'
   }
 ])
 
 const incomeSplit = computed(() => ({
-  labels: ['Contribuicoes', 'Ofertas'],
+  labels: ['Contribuições', 'Ofertas'],
   data: [
-    Number(dashboard.value?.totalContribuicoesMes ?? 0),
+    Number(dashboard.value?.totalContribuiçõesMes ?? 0),
     Number(dashboard.value?.totalOfertasMes ?? 0)
   ],
   colors: ['#945a22', '#c7a27d']
@@ -79,15 +78,14 @@ const birthdays = computed(() =>
 )
 
 const displayBirthdays = computed(() => {
-  const list = birthdays.value.length ? birthdays.value : birthdaysMock
-  return [...list].sort((a, b) => Number(a.date.split('/')[0]) - Number(b.date.split('/')[0]))
+  return [...birthdays.value].sort((a, b) => Number(a.date.split('/')[0]) - Number(b.date.split('/')[0]))
 })
 
 const displayCalendarEvents = computed(() =>
   displayBirthdays.value.map((person) => {
     const day = Number(person.date.split('/')[0])
     const firstName = person.name.split(' ')[0]
-    return { id: person.id, day, label: `Aniversario: ${firstName}` }
+    return { id: person.id, day, label: `Aniversário: ${firstName}` }
   })
 )
 
@@ -96,14 +94,7 @@ const navigateTo = (screen) => {
 }
 
 const loadDashboard = async () => {
-  // dashboard.value = await api.get('/dashboard')
-  dashboard.value = {
-    totalContribuintes: 100,
-    totalArrecadadoMes: 1000,
-    totalOfertasMes: 100,
-    totalDespesasMes: 100,
-    aniversariantes: []
-  }
+  dashboard.value = await api.get('/dashboard')
 }
 
 onMounted(async () => {
@@ -121,7 +112,7 @@ onMounted(async () => {
   <section class="dashboard">
     <header class="dashboard__hero">
       <div>
-        <h2 class="dashboard__greeting">Ola, {{ firstName }}!</h2>
+        <h2 class="dashboard__greeting">Olá, {{ firstName }}!</h2>
         <p class="dashboard__date">{{ today }}</p>
       </div>
       <div class="dashboard__quick">
@@ -151,7 +142,7 @@ onMounted(async () => {
       />
       <div class="dashboard__donuts">
         <DonutChart
-          title="Distribuicao da arrecadacao"
+          title="Distribuição da arrecadação"
           :labels="incomeSplit.labels"
           :data="incomeSplit.data"
           :colors="incomeSplit.colors"
@@ -171,3 +162,4 @@ onMounted(async () => {
     </section>
   </section>
 </template>
+

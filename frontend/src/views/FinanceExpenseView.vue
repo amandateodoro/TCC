@@ -3,13 +3,14 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import FinancePanel from '../components/FinancePanel.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
-import { financeCategoryOptions, financeExpenseFormMock } from '../mock/appData.js'
+import { financeExpenseFormDefaults } from '../forms/defaultValues.js'
 import { api, formatCurrency, formatDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()
 
-const financeExpenseForm = reactive({ ...financeExpenseFormMock })
+const financeExpenseForm = reactive({ ...financeExpenseFormDefaults })
 const expenses = ref([])
+const expenseCategories = ref([])
 
 const financeExpenseRows = computed(() =>
   expenses.value.map((expense) => ({
@@ -21,6 +22,10 @@ const financeExpenseRows = computed(() =>
   }))
 )
 
+const financeCategoryOptions = computed(() =>
+  expenseCategories.value.map((category) => category.nome)
+)
+
 const sumRows = (rows, key) =>
   formatCurrency(rows.reduce((total, row) => total + Number(row[key] ?? 0), 0))
 
@@ -28,6 +33,10 @@ const expenseTotalLabel = computed(() => `TOTAL: ${sumRows(expenses.value, 'valo
 
 const loadExpenses = async () => {
   expenses.value = await api.get('/despesas')
+}
+
+const loadExpenseCategories = async () => {
+  expenseCategories.value = await api.get('/categorias-despesa')
 }
 
 const save = async () => {
@@ -39,7 +48,7 @@ const save = async () => {
       dataDespesa: toIsoDate(financeExpenseForm.date),
       usuarioIds: currentUser.value?.id ? [currentUser.value.id] : []
     })
-    Object.assign(financeExpenseForm, financeExpenseFormMock)
+    Object.assign(financeExpenseForm, financeExpenseFormDefaults)
     await loadExpenses()
     showToast('Despesa adicionada com sucesso.', 'success')
   } catch (error) {
@@ -48,13 +57,13 @@ const save = async () => {
 }
 
 const cancel = () => {
-  Object.assign(financeExpenseForm, financeExpenseFormMock)
+  Object.assign(financeExpenseForm, financeExpenseFormDefaults)
   showToast('Lançamento financeiro limpo.')
 }
 
 onMounted(async () => {
   try {
-    await loadExpenses()
+    await Promise.all([loadExpenses(), loadExpenseCategories()])
   } catch (error) {
     showToast(error.message, 'danger')
   }

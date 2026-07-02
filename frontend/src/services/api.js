@@ -20,7 +20,7 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}))
-    const requestError = new Error(error.message || 'Nao foi possivel concluir a operacao.')
+    const requestError = new Error(error.message || 'Não foi possível concluir a operação.')
     requestError.status = response.status
     throw requestError
   }

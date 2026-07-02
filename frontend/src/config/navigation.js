@@ -1,16 +1,12 @@
 export const navigationItems = [
-  { id: 'inicio', label: 'Início', icon: 'home', screen: 'dashboard' },
+  { id: 'inicio', label: 'Início', icon: 'home', route: 'dashboard' },
   {
     id: 'cadastro',
     label: 'Cadastro',
     icon: 'userPlus',
     children: [
-      { id: 'cadastro-usuario', label: 'Usuário', screen: 'user-registration' },
-      {
-        id: 'cadastro-contribuinte',
-        label: 'Contribuinte',
-        screen: 'contributor-registration'
-      }
+      { id: 'cadastro-usuario', label: 'Usuário', route: 'user-registration' },
+      { id: 'cadastro-contribuinte', label: 'Contribuinte', route: 'contributor-registration' }
     ]
   },
   {
@@ -18,12 +14,8 @@ export const navigationItems = [
     label: 'Consulta',
     icon: 'edit',
     children: [
-      { id: 'consulta-usuario', label: 'Usuários', screen: 'user-consultation' },
-      {
-        id: 'consulta-contribuinte',
-        label: 'Contribuinte',
-        screen: 'contributor-consultation'
-      }
+      { id: 'consulta-usuario', label: 'Usuários', route: 'user-consultation' },
+      { id: 'consulta-contribuinte', label: 'Contribuinte', route: 'contributor-consultation' }
     ]
   },
   {
@@ -31,31 +23,43 @@ export const navigationItems = [
     label: 'Financeiro',
     icon: 'money',
     children: [
-      {
-        id: 'financeiro-contribuicoes',
-        label: 'Contribuições',
-        screen: 'finance-contribution'
-      },
-      { id: 'financeiro-oferta', label: 'Oferta', screen: 'finance-offering' },
-      {
-        id: 'financeiro-despesas',
-        label: 'Despesas',
-        screen: 'finance-expense'
-      }
+      { id: 'financeiro-contribuicoes', label: 'Contribuições', route: 'finance-contribution' },
+      { id: 'financeiro-oferta', label: 'Oferta', route: 'finance-offering' },
+      { id: 'financeiro-despesas', label: 'Despesas', route: 'finance-expense' }
     ]
   },
-  { id: 'relatorio', label: 'Relatório', icon: 'report', screen: 'relatorio' }
+  {
+    id: 'relatorio',
+    label: 'Relatório',
+    icon: 'report',
+    route: 'relatorio'
+  }
 ]
+
+export const screenTitles = {
+  dashboard: 'Início',
+  'user-registration': 'Cadastro de Usuário',
+  'contributor-registration': 'Cadastro de Contribuinte',
+  'user-consultation': 'Consulta de Usuários',
+  'contributor-consultation': 'Consulta de Contribuintes',
+  'user-edit': 'Editar Usuário',
+  'contributor-edit': 'Editar Contribuinte',
+  'finance-contribution': 'Contribuições',
+  'finance-offering': 'Oferta',
+  'finance-expense': 'Despesas',
+  relatorio: 'Relatório',
+  profile: 'Perfil'
+}
 
 export const quickActions = [
   {
     id: 'contribuinte',
     label: 'Cadastrar Contribuinte',
-    targetScreen: 'contributor-registration'
+    targetRoute: 'contributor-registration'
   },
   {
     id: 'contribuicao',
     label: 'Registrar Contribuição',
-    targetScreen: 'finance-contribution'
+    targetRoute: 'finance-contribution'
   }
 ]

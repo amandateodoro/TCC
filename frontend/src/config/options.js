@@ -1,22 +1,23 @@
 export const contributionTypeOptions = [
-  "Dízimo", 
-  "Doações"
-];
+  'Dízimo',
+  'Contribuição voluntária'
+]
 
 export const celebrationTypeOptions = [
-  "Santa Missa",
-  "Celebração da palavra",
-  "Celebração especial"
-];
+  'Santa Missa',
+  'Celebração dominical',
+  'Celebração especial',
+  'Novena'
+]
 
 export const paymentMethodOptions = [
-  "Dinheiro", 
-  "Pix", 
-  "Cartão"
-];
+  'Dinheiro',
+  'Pix',
+  'Cartão'
+]
 
 export const reportTypeOptions = [
-  "Aniversariantes",
-  "Receitas",
-  "Despesas",
-];
+  'Aniversariantes',
+  'Contribuições',
+  'Despesas'
+]
