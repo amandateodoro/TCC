@@ -177,6 +177,32 @@ export class ContribuinteService {
       .getMany();
   }
 
+  birthdaysByPeriod(inicio: string, fim: string) {
+    const start = new Date(`${inicio}T00:00:00`);
+    const end = new Date(`${fim}T00:00:00`);
+    const startMonthDay = `${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+    const endMonthDay = `${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+    const monthDayExpression = "DATE_FORMAT(contribuinte.data_de_nascimento, '%m-%d')";
+    const query = this.repository.createQueryBuilder('contribuinte');
+
+    if (startMonthDay <= endMonthDay) {
+      query.where(`${monthDayExpression} BETWEEN :startMonthDay AND :endMonthDay`, {
+        startMonthDay,
+        endMonthDay,
+      });
+    } else {
+      query.where(
+        `(${monthDayExpression} >= :startMonthDay OR ${monthDayExpression} <= :endMonthDay)`,
+        { startMonthDay, endMonthDay },
+      );
+    }
+
+    return query
+      .orderBy('MONTH(contribuinte.data_de_nascimento)', 'ASC')
+      .addOrderBy('DAY(contribuinte.data_de_nascimento)', 'ASC')
+      .getMany();
+  }
+
   private async findWithSpouse(repository: Repository<Contribuinte>, id: number) {
     const contribuinte = await repository.findOne({
       where: { id },

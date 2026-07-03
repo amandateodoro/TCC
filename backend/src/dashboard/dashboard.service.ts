@@ -34,6 +34,10 @@ export class DashboardService {
       totalArrecadadoMes: (
         Number(totalContribuicoes?.total ?? 0) + Number(totalOfertas?.total ?? 0)
       ).toFixed(2),
+      saldoMes: (
+        Number(totalContribuicoes?.total ?? 0) + Number(totalOfertas?.total ?? 0)
+        - Number(totalDespesas?.total ?? 0)
+      ).toFixed(2),
       totalContribuicoesMes: Number(totalContribuicoes?.total ?? 0).toFixed(2),
       totalOfertasMes: Number(totalOfertas?.total ?? 0).toFixed(2),
       totalDespesasMes: Number(totalDespesas?.total ?? 0).toFixed(2),

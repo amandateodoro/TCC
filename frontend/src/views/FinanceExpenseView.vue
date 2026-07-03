@@ -4,7 +4,7 @@ import FinancePanel from '../components/FinancePanel.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
 import { financeExpenseFormDefaults } from '../forms/defaultValues.js'
-import { api, formatCurrency, formatDate, toIsoDate } from '../services/api.js'
+import { api, formatCurrency, formatDate, isFutureDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()
 
@@ -41,12 +41,19 @@ const loadExpenseCategories = async () => {
 
 const save = async () => {
   try {
+    const expenseDate = toIsoDate(financeExpenseForm.date)
+
+    if (isFutureDate(expenseDate)) {
+      showToast('A data da despesa não pode ser futura.', 'danger')
+      return
+    }
+
     await api.post('/despesas', {
       categoriaNome: financeExpenseForm.category,
       descricaoDespesa: financeExpenseForm.observation,
       valorDespesa: financeExpenseForm.amount,
-      dataDespesa: toIsoDate(financeExpenseForm.date),
-      usuarioIds: currentUser.value?.id ? [currentUser.value.id] : []
+      dataDespesa: expenseDate,
+      usuarioId: currentUser.value?.id
     })
     Object.assign(financeExpenseForm, financeExpenseFormDefaults)
     await loadExpenses()

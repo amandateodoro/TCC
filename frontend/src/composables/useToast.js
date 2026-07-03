@@ -1,4 +1,4 @@
-import Toast from '../vendor/toast/Toast.js'
+import Toast from '../components/Toast.js'
 
 export function showToast(message, type = 'default') {
   if (!message) {

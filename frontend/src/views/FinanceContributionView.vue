@@ -8,7 +8,7 @@ import {
   paymentMethodOptions
 } from '../config/options.js'
 import { financeContributionFormDefaults } from '../forms/defaultValues.js'
-import { api, formatCurrency, formatDate, toIsoDate } from '../services/api.js'
+import { api, formatCurrency, formatDate, isFutureDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()
 
@@ -24,9 +24,9 @@ const contributorNameOptions = computed(() =>
 const financeContributionRows = computed(() =>
   contributions.value.map((contribution) => ({
     id: contribution.id,
-    contributor: contribution.contribuintes?.map((item) => item.nomeCompleto).join(', ') ?? '',
+    contributor: contribution.contribuinte?.nomeCompleto ?? '',
     category: contribution.tipoContribuicao,
-    observation: contribution.observacao ?? contribution.contribuintes?.map((item) => item.nomeCompleto).join(', ') ?? '',
+    observation: contribution.observacao ?? contribution.contribuinte?.nomeCompleto ?? '',
     paymentDate: formatDate(contribution.dataDePagamento),
     amount: formatCurrency(contribution.valorContribuicao)
   }))
@@ -58,14 +58,21 @@ const save = async () => {
       return
     }
 
+    const paymentDate = toIsoDate(financeContributionForm.paymentDate)
+
+    if (isFutureDate(paymentDate)) {
+      showToast('A data de pagamento não pode ser futura.', 'danger')
+      return
+    }
+
     await api.post('/contribuicoes', {
       tipoContribuicao: financeContributionForm.contributionType,
       valorContribuicao: financeContributionForm.amount,
       formaDePagamento: financeContributionForm.paymentMethod,
-      dataDePagamento: toIsoDate(financeContributionForm.paymentDate),
+      dataDePagamento: paymentDate,
       observacao: financeContributionForm.observation,
       usuarioCadastroId: currentUser.value?.id,
-      contribuinteIds: [contributor.id]
+      contribuinteId: contributor.id
     })
     Object.assign(financeContributionForm, financeContributionFormDefaults)
     await loadContributions()

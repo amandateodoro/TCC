@@ -12,6 +12,27 @@ const { currentUser, clearSession } = useAuth()
 
 const currentScreen = computed(() => route.name ?? 'dashboard')
 const currentScreenTitle = computed(() => screenTitles[currentScreen.value] ?? currentScreen.value)
+const isAdministrator = computed(() => currentUser.value?.nivelAcesso === 'Administrador')
+
+const allowedNavigationItems = computed(() => {
+  if (isAdministrator.value) {
+    return navigationItems
+  }
+
+  return navigationItems
+    .map((item) => {
+      if (!item.children) {
+        return item
+      }
+
+      const children = item.children.filter(
+        (child) => !['user-registration', 'user-consultation'].includes(child.route)
+      )
+
+      return children.length ? { ...item, children } : null
+    })
+    .filter(Boolean)
+})
 
 const logout = () => {
   clearSession()
@@ -26,7 +47,7 @@ const openProfile = () => {
 <template>
   <div class="app-shell">
     <SidebarNav
-      :items="navigationItems"
+      :items="allowedNavigationItems"
       @logout="logout"
     />
 

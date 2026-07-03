@@ -5,7 +5,7 @@ import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
 import { celebrationTypeOptions } from '../config/options.js'
 import { financeOfferingFormDefaults } from '../forms/defaultValues.js'
-import { api, formatCurrency, formatDate, toIsoDate } from '../services/api.js'
+import { api, formatCurrency, formatDate, isFutureDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()
 
@@ -33,10 +33,17 @@ const loadOfferings = async () => {
 
 const save = async () => {
   try {
+    const offeringDate = toIsoDate(financeOfferingForm.date)
+
+    if (isFutureDate(offeringDate)) {
+      showToast('A data da oferta não pode ser futura.', 'danger')
+      return
+    }
+
     await api.post('/ofertas', {
       tipoCelebracao: financeOfferingForm.celebrationType,
       valorTotal: financeOfferingForm.totalAmount,
-      dataOferta: toIsoDate(financeOfferingForm.date),
+      dataOferta: offeringDate,
       observacao: financeOfferingForm.observation,
       usuarioCadastroId: currentUser.value?.id
     })

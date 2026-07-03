@@ -15,6 +15,10 @@ export class RelatorioService {
     const normalized = tipo.toLowerCase();
 
     if (normalized.includes('anivers')) {
+      if (inicio && fim) {
+        return this.contribuintes.birthdaysByPeriod(inicio, fim);
+      }
+
       return this.contribuintes.birthdaysByMonth(new Date().getMonth() + 1);
     }
 

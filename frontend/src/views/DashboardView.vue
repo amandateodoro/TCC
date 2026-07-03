@@ -3,7 +3,6 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ActionButton from '../components/ActionButton.vue'
 import BirthdaysCard from '../components/BirthdaysCard.vue'
-import DashboardCalendar from '../components/DashboardCalendar.vue'
 import DonutChart from '../components/DonutChart.vue'
 import RevenueLineChart from '../components/RevenueLineChart.vue'
 import StatCard from '../components/StatCard.vue'
@@ -42,14 +41,14 @@ const stats = computed(() => [
   },
   {
     id: 'amount',
-    label: 'Arrecadado no mês',
-    value: formatCurrency(dashboard.value?.totalArrecadadoMes ?? 0),
+    label: 'Saldo mensal',
+    value: formatCurrency(dashboard.value?.saldoMes ?? 0),
     icon: 'currency'
   },
   {
     id: 'offers',
-    label: 'Ofertas no mês',
-    value: formatCurrency(dashboard.value?.totalOfertasMes ?? 0),
+    label: 'Arrecadado no mês',
+    value: formatCurrency(dashboard.value?.totalArrecadadoMes ?? 0),
     icon: 'wallet'
   },
   {
@@ -63,7 +62,7 @@ const stats = computed(() => [
 const incomeSplit = computed(() => ({
   labels: ['Contribuições', 'Ofertas'],
   data: [
-    Number(dashboard.value?.totalContribuiçõesMes ?? 0),
+    Number(dashboard.value?.totalContribuicoesMes ?? 0),
     Number(dashboard.value?.totalOfertasMes ?? 0)
   ],
   colors: ['#945a22', '#c7a27d']
@@ -80,14 +79,6 @@ const birthdays = computed(() =>
 const displayBirthdays = computed(() => {
   return [...birthdays.value].sort((a, b) => Number(a.date.split('/')[0]) - Number(b.date.split('/')[0]))
 })
-
-const displayCalendarEvents = computed(() =>
-  displayBirthdays.value.map((person) => {
-    const day = Number(person.date.split('/')[0])
-    const firstName = person.name.split(' ')[0]
-    return { id: person.id, day, label: `Aniversário: ${firstName}` }
-  })
-)
 
 const navigateTo = (screen) => {
   router.push({ name: screen })
@@ -157,7 +148,6 @@ onMounted(async () => {
     </section>
 
     <section class="dashboard__bottom">
-      <!-- <DashboardCalendar :events="displayCalendarEvents" /> -->
       <BirthdaysCard :birthdays="displayBirthdays" />
     </section>
   </section>

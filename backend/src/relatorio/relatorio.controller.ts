@@ -31,6 +31,14 @@ export class RelatorioController {
       throw new BadRequestException('Informe o tipo do relatorio.');
     }
 
+    if ((inicio && !fim) || (!inicio && fim)) {
+      throw new BadRequestException('Informe a data inicial e a data final para gerar o relatorio.');
+    }
+
+    if (inicio && fim && fim < inicio) {
+      throw new BadRequestException('A data final nao pode ser anterior a data inicial.');
+    }
+
     return this.service.gerar(tipo, inicio, fim);
   }
 }

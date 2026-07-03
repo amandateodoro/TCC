@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
+import { assertNotFutureDate } from '../common/assert-not-future-date';
 import { parseMoney } from '../common/parse-money';
 import { ContribuinteService } from '../contribuinte/contribuinte.service';
 import { UsuarioService } from '../usuario/usuario.service';
@@ -62,6 +63,7 @@ export class ContribuicaoService {
 
   private async toEntityPayload(dto: Partial<CreateContribuicaoDto>) {
     const { contribuinteId, usuarioCadastroId, valorContribuicao, ...payload } = dto;
+    assertNotFutureDate(payload.dataDePagamento, 'A data de pagamento');
 
     return {
       ...payload,

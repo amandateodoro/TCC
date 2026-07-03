@@ -2,14 +2,15 @@
 import { computed } from 'vue'
 import {
   Banknote,
-  Bell,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
+  Church,
   CircleX,
   DollarSign,
   FileText,
   Gift,
+  Home,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
@@ -20,20 +21,14 @@ import {
   Trash2,
   TrendingUp,
   User,
-  UserCircle,
   UserPlus,
   Users,
   Wallet
 } from '@lucide/vue'
-import crossIcon from '../assets/icons/cruz.png'
-import homeIcon from '../assets/icons/botao-de-inicio.png'
-
-const imageIcons = {
-  church: crossIcon,
-  home: homeIcon
-}
 
 const iconMap = {
+  church: Church,
+  home: Home,
   userPlus: UserPlus,
   edit: Pencil,
   search: Search,
@@ -43,15 +38,13 @@ const iconMap = {
   report: FileText,
   reportFile: FileText,
   logout: LogOut,
-  user: User,
   users: Users,
   gift: Gift,
   plus: Plus,
   sidebarCollapse: PanelLeftClose,
   sidebarExpand: PanelLeftOpen,
   cancel: CircleX,
-  profile: UserCircle,
-  bell: Bell,
+  profile: User,
   calendar: CalendarDays,
   wallet: Wallet,
   receipt: ReceiptText,
@@ -79,35 +72,12 @@ const props = defineProps({
   }
 })
 
-const imageSrc = computed(() => imageIcons[props.name] ?? null)
 const iconComponent = computed(() => iconMap[props.name] ?? null)
-
-const imageStyle = computed(() => {
-  if (!props.size) {
-    return undefined
-  }
-
-  const value = typeof props.size === 'number' ? `${props.size}px` : props.size
-
-  return {
-    width: value,
-    height: value
-  }
-})
 </script>
 
 <template>
-  <img
-    v-if="imageSrc"
-    aria-hidden="true"
-    class="app-icon app-icon--image"
-    :src="imageSrc"
-    :style="imageStyle"
-    alt=""
-  />
-
   <component
-    v-else-if="iconComponent"
+    v-if="iconComponent"
     :is="iconComponent"
     aria-hidden="true"
     class="app-icon"
