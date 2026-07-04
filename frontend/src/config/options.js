@@ -18,6 +18,7 @@ export const paymentMethodOptions = [
 
 export const reportTypeOptions = [
   'Aniversariantes',
-  'Contribuições',
-  'Despesas'
+  'Entradas',
+  'Saídas',
+  'Saldo'
 ]

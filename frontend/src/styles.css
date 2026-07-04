@@ -1755,6 +1755,8 @@ button {
 .report-action {
   display: flex;
   justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .report-action .action-button {
@@ -1858,6 +1860,19 @@ button {
 
 .report-table tbody tr:hover {
   background: rgba(173, 136, 102, 0.05);
+}
+
+.report-sign {
+  margin-right: 0.12rem;
+  font-weight: 600;
+}
+
+.report-sign--income {
+  color: #2f8f3a;
+}
+
+.report-sign--expense {
+  color: #c02b20;
 }
 
 .report-empty {

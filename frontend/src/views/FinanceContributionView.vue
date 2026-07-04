@@ -65,6 +65,11 @@ const save = async () => {
       return
     }
 
+    if (!financeContributionForm.paymentMethod) {
+      showToast('Selecione a forma de pagamento.', 'warning')
+      return
+    }
+
     await api.post('/contribuicoes', {
       tipoContribuicao: financeContributionForm.contributionType,
       valorContribuicao: financeContributionForm.amount,

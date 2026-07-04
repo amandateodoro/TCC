@@ -12,19 +12,31 @@ const reportRows = ref([])
 const generatedReportType = ref('')
 
 const normalizedReportType = computed(() =>
-  generatedReportType.value.toLocaleLowerCase('pt-BR')
+  generatedReportType.value
+    .toLocaleLowerCase('pt-BR')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
 )
 
 const reportTitle = computed(() =>
-  generatedReportType.value ? `Relatorio de ${generatedReportType.value}` : 'Relatorio'
+  generatedReportType.value ? `Relatório de ${generatedReportType.value}` : 'Relatorio'
 )
+
+const isSaldoReport = computed(() => normalizedReportType.value.includes('saldo'))
 
 const periodLabel = computed(() => {
   if (reportForm.startDate && reportForm.endDate) {
     return `${formatDate(reportForm.startDate)} a ${formatDate(reportForm.endDate)}`
   }
 
-  if (normalizedReportType.value.includes('anivers')) {
+  if (
+    normalizedReportType.value.includes('anivers') ||
+    normalizedReportType.value.includes('entrada') ||
+    normalizedReportType.value.includes('contrib') ||
+    normalizedReportType.value.includes('saida') ||
+    normalizedReportType.value.includes('desp') ||
+    normalizedReportType.value.includes('saldo')
+  ) {
     return 'Mês atual'
   }
 
@@ -32,12 +44,16 @@ const periodLabel = computed(() => {
 })
 
 const reportColumns = computed(() => {
-  if (normalizedReportType.value.includes('contrib')) {
-    return ['Contribuinte', 'Tipo', 'Pagamento', 'Data', 'Valor', 'Observacao']
+  if (normalizedReportType.value.includes('entrada') || normalizedReportType.value.includes('contrib')) {
+    return ['Origem', 'Nome Contribuinte / Tipo Celebração', 'Pagamento', 'Data', 'Valor', 'Observação']
   }
 
-  if (normalizedReportType.value.includes('desp')) {
-    return ['Categoria', 'Descricao', 'Data', 'Valor']
+  if (normalizedReportType.value.includes('saida') || normalizedReportType.value.includes('desp')) {
+    return ['Categoria', 'Descrição', 'Data', 'Valor']
+  }
+
+  if (isSaldoReport.value) {
+    return ['Data', 'Contribuição voluntária', 'Dízimo', 'Oferta', 'Despesa', 'Saldo']
   }
 
   return ['Nome', 'Telefone', 'Data de nascimento']
@@ -45,22 +61,38 @@ const reportColumns = computed(() => {
 
 const getReportCellValue = (row, column) => {
   const columnMap = {
+    Origem: row.origem,
     Contribuinte: row.contribuinte?.nomeCompleto,
-    Tipo: row.tipoContribuicao,
-    Pagamento: row.formaDePagamento,
-    Data: row.dataDePagamento
+    Tipo: row.tipo,
+    Pagamento: row.pagamento ?? row.formaDePagamento,
+    Data: row.data
+      ? formatDate(row.data)
+      : row.dataDePagamento
       ? formatDate(row.dataDePagamento)
       : row.dataDespesa
         ? formatDate(row.dataDespesa)
         : '',
-    Valor: row.valorContribuicao
+    Valor: row.valor
+      ? formatCurrency(row.valor)
+      : row.valorContribuicao
       ? formatCurrency(row.valorContribuicao)
       : row.valorDespesa
         ? formatCurrency(row.valorDespesa)
         : '',
     Observacao: row.observacao,
+    'Observação': row.observacao,
     Categoria: row.categoria?.nome,
-    Descricao: row.descricaoDespesa,
+    Descricao: row.descricao ?? row.descricaoDespesa,
+    'Descrição': row.descricao ?? row.descricaoDespesa,
+    'Nome Contribuinte / Tipo Celebração': row.descricao,
+    'Contribuição voluntária': formatCurrency(row.contribuicaoVoluntaria),
+    Dízimo: formatCurrency(row.dizimo),
+    Oferta: formatCurrency(row.oferta),
+    Despesa: formatCurrency(row.despesa),
+    Entradas: formatCurrency(row.entradas),
+    Saidas: formatCurrency(row.saidas),
+    'Saídas': formatCurrency(row.saidas),
+    Saldo: formatCurrency(row.saldo),
     Nome: row.nomeCompleto,
     Telefone: row.telefone,
     'Data de nascimento': row.dataDeNascimento ? formatDate(row.dataDeNascimento) : ''
@@ -69,21 +101,55 @@ const getReportCellValue = (row, column) => {
   return columnMap[column] || '-'
 }
 
+const getReportSign = (row, column) => {
+  if (!isSaldoReport.value) {
+    return null
+  }
+
+  if (['Contribuição voluntária', 'Dízimo', 'Oferta'].includes(column)) {
+    return {
+      label: '(+)',
+      className: 'report-sign report-sign--income'
+    }
+  }
+
+  if (column === 'Despesa') {
+    return {
+      label: '(-)',
+      className: 'report-sign report-sign--expense'
+    }
+  }
+
+  return null
+}
+
 const totalAmount = computed(() =>
   reportRows.value.reduce(
-    (total, row) => total + Number(row.valorContribuicao ?? row.valorDespesa ?? 0),
+    (total, row) => total + Number(row.saldo ?? row.valor ?? row.valorContribuicao ?? row.valorDespesa ?? 0),
     0
   )
 )
 
 const shouldShowTotal = computed(() =>
-  normalizedReportType.value.includes('contrib') || normalizedReportType.value.includes('desp')
+  normalizedReportType.value.includes('entrada') ||
+  normalizedReportType.value.includes('contrib') ||
+  normalizedReportType.value.includes('saida') ||
+  normalizedReportType.value.includes('desp') ||
+  normalizedReportType.value.includes('saldo')
+)
+
+const totalLabel = computed(() =>
+  isSaldoReport.value ? 'Saldo total' : 'Total'
+)
+
+const countLabel = computed(() =>
+  isSaldoReport.value ? 'Dias no relatório' : 'Total de registros'
 )
 
 const generateReport = async () => {
   try {
     if (!reportForm.type) {
-      showToast('Selecione o tipo de relatorio.', 'danger')
+      showToast('Selecione o tipo de relatório.', 'danger')
       return
     }
 
@@ -101,10 +167,16 @@ const generateReport = async () => {
       `/relatorios?tipo=${encodeURIComponent(reportForm.type)}&inicio=${encodeURIComponent(reportForm.startDate)}&fim=${encodeURIComponent(reportForm.endDate)}`
     )
     generatedReportType.value = reportForm.type
-    showToast(`Relatorio gerado com ${reportRows.value.length} registro(s).`, 'success')
+    showToast(`Relatório gerado com ${reportRows.value.length} registro(s).`, 'success')
   } catch (error) {
     showToast(error.message, 'danger')
   }
+}
+
+const cancelReport = () => {
+  Object.assign(reportForm, reportFormDefaults)
+  reportRows.value = []
+  generatedReportType.value = ''
 }
 
 const printReport = () => {
@@ -118,6 +190,7 @@ const printReport = () => {
       :form="reportForm"
       :report-type-options="reportTypeOptions"
       @generate="generateReport"
+      @cancel="cancelReport"
     />
 
     <section v-if="generatedReportType" class="report-result" aria-live="polite">
@@ -149,7 +222,13 @@ const printReport = () => {
           <tbody>
             <tr v-for="row in reportRows" :key="row.id">
               <td v-for="column in reportColumns" :key="column">
-                {{ getReportCellValue(row, column) }}
+                <template v-if="getReportSign(row, column)">
+                  <span :class="getReportSign(row, column).className">
+                    {{ getReportSign(row, column).label }}
+                  </span>
+                  <span>{{ getReportCellValue(row, column) }}</span>
+                </template>
+                <span v-else>{{ getReportCellValue(row, column) }}</span>
               </td>
             </tr>
           </tbody>
@@ -159,8 +238,8 @@ const printReport = () => {
       <p v-else class="report-empty">Nenhum registro encontrado para os filtros informados.</p>
 
       <footer class="report-summary">
-        <span>Total de registros: {{ reportRows.length }}</span>
-        <strong v-if="shouldShowTotal">Total: {{ formatCurrency(totalAmount) }}</strong>
+        <span>{{ countLabel }}: {{ reportRows.length }}</span>
+        <strong v-if="shouldShowTotal">{{ totalLabel }}: {{ formatCurrency(totalAmount) }}</strong>
       </footer>
     </section>
   </section>

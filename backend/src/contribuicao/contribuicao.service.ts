@@ -61,6 +61,18 @@ export class ContribuicaoService {
       .getRawOne<{ total: string }>();
   }
 
+  sumByPeriod(inicio?: string, fim?: string) {
+    const query = this.repository
+      .createQueryBuilder('contribuicao')
+      .select('COALESCE(SUM(contribuicao.valor_contribuicao), 0)', 'total');
+
+    if (inicio && fim) {
+      query.where('contribuicao.data_de_pagamento BETWEEN :inicio AND :fim', { inicio, fim });
+    }
+
+    return query.getRawOne<{ total: string }>();
+  }
+
   private async toEntityPayload(dto: Partial<CreateContribuicaoDto>) {
     const { contribuinteId, usuarioCadastroId, valorContribuicao, ...payload } = dto;
     assertNotFutureDate(payload.dataDePagamento, 'A data de pagamento');

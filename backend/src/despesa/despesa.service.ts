@@ -61,6 +61,18 @@ export class DespesaService {
       .getRawOne<{ total: string }>();
   }
 
+  sumByPeriod(inicio?: string, fim?: string) {
+    const query = this.repository
+      .createQueryBuilder('despesa')
+      .select('COALESCE(SUM(despesa.valor_despesa), 0)', 'total');
+
+    if (inicio && fim) {
+      query.where('despesa.data_despesa BETWEEN :inicio AND :fim', { inicio, fim });
+    }
+
+    return query.getRawOne<{ total: string }>();
+  }
+
   private async toEntityPayload(dto: Partial<CreateDespesaDto>) {
     const { categoriaId, categoriaNome, usuarioId, valorDespesa, ...payload } = dto;
     assertNotFutureDate(payload.dataDespesa, 'A data da despesa');

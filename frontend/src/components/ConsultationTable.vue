@@ -53,6 +53,14 @@ const sortedRows = computed(() => {
 const toggleNameSort = () => {
   nameSortDirection.value = nameSortDirection.value === 'asc' ? 'desc' : 'asc'
 }
+
+const displayValue = (value) => {
+  if (value === null || value === undefined || value === '') {
+    return '-'
+  }
+
+  return value
+}
 </script>
 
 <template>
@@ -114,7 +122,7 @@ const toggleNameSort = () => {
             >
               {{ row[header.key] }}
             </span>
-            <span v-else>{{ row[header.key] }}</span>
+            <span v-else>{{ displayValue(row[header.key]) }}</span>
           </div>
           <div class="consultation-table__cell consultation-table__cell--actions">
             <button type="button" class="consultation-table__action" :aria-label="`Editar ${row.name}`" @click="emit('edit', row)">

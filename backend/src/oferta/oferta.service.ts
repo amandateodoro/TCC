@@ -59,6 +59,18 @@ export class OfertaService {
       .getRawOne<{ total: string }>();
   }
 
+  sumByPeriod(inicio?: string, fim?: string) {
+    const query = this.repository
+      .createQueryBuilder('oferta')
+      .select('COALESCE(SUM(oferta.valor_total), 0)', 'total');
+
+    if (inicio && fim) {
+      query.where('oferta.data_oferta BETWEEN :inicio AND :fim', { inicio, fim });
+    }
+
+    return query.getRawOne<{ total: string }>();
+  }
+
   private async toEntityPayload(dto: Partial<CreateOfertaDto>) {
     const { usuarioCadastroId, valorTotal, ...payload } = dto;
     assertNotFutureDate(payload.dataOferta, 'A data da oferta');

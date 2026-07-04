@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateContribuicaoDto {
   @ApiProperty({
@@ -17,6 +17,7 @@ export class CreateContribuicaoDto {
   @ApiProperty({
     description: 'Obrigatorio. Forma de pagamento.',
   })
+  @IsNotEmpty()
   @IsString()
   formaDePagamento: string;
 
