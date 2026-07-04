@@ -56,7 +56,7 @@ export const formatDate = (value) => {
 
 export const toIsoDate = (value) => value || new Date().toISOString().slice(0, 10)
 
-const todayIsoDate = () => {
+export const todayIsoDate = () => {
   const now = new Date()
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')

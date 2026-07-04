@@ -6,9 +6,11 @@ function Toast(options) {
   this.options = options
   this.options.type = options.type || 'default'
   this.options.closeLabel = options.closeLabel || 'Fechar'
+  this.options.duration = options.duration ?? 5000
 
   this.toastContainerEl = document.querySelector('.toastjs-container')
   this.toastEl = document.querySelector('.toastjs')
+  this.autoCloseTimer = null
 
   this._init()
 }
@@ -44,6 +46,8 @@ Toast.prototype._addEventListeners = function () {
 }
 
 Toast.prototype._close = function () {
+  clearTimeout(this.autoCloseTimer)
+
   return new Promise((resolve) => {
     this.toastContainerEl.setAttribute('aria-hidden', true)
     setTimeout(() => {
@@ -60,6 +64,7 @@ Toast.prototype._close = function () {
 }
 
 Toast.prototype._open = function () {
+  clearTimeout(this.autoCloseTimer)
   this.toastEl.classList.add(this.options.type)
   this.toastContainerEl.setAttribute('aria-hidden', false)
 
@@ -79,6 +84,12 @@ Toast.prototype._open = function () {
 
   this.focusedElBeforeOpen = document.activeElement
   document.querySelector('.toastjs-btn--close').focus()
+
+  if (this.options.duration > 0) {
+    this.autoCloseTimer = setTimeout(() => {
+      this._close()
+    }, this.options.duration)
+  }
 }
 
 Toast.prototype._init = function () {

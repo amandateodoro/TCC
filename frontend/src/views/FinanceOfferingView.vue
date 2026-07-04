@@ -5,15 +5,19 @@ import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
 import { celebrationTypeOptions } from '../config/options.js'
 import { financeOfferingFormDefaults } from '../forms/defaultValues.js'
-import { api, formatCurrency, formatDate, isFutureDate, toIsoDate } from '../services/api.js'
+import { api, formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()
 
 const financeOfferingForm = reactive({ ...financeOfferingFormDefaults })
 const offerings = ref([])
 
+const todayOfferings = computed(() =>
+  offerings.value.filter((offering) => offering.dataOferta === todayIsoDate())
+)
+
 const financeOfferingRows = computed(() =>
-  offerings.value.map((offering) => ({
+  todayOfferings.value.map((offering) => ({
     id: offering.id,
     category: offering.tipoCelebracao,
     observation: offering.observacao ?? '',
@@ -25,7 +29,7 @@ const financeOfferingRows = computed(() =>
 const sumRows = (rows, key) =>
   formatCurrency(rows.reduce((total, row) => total + Number(row[key] ?? 0), 0))
 
-const offeringTotalLabel = computed(() => `TOTAL: ${sumRows(offerings.value, 'valorTotal')}`)
+const offeringTotalLabel = computed(() => `TOTAL: ${sumRows(todayOfferings.value, 'valorTotal')}`)
 
 const loadOfferings = async () => {
   offerings.value = await api.get('/ofertas')

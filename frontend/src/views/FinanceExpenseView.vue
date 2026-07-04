@@ -4,7 +4,7 @@ import FinancePanel from '../components/FinancePanel.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
 import { financeExpenseFormDefaults } from '../forms/defaultValues.js'
-import { api, formatCurrency, formatDate, isFutureDate, toIsoDate } from '../services/api.js'
+import { api, formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()
 
@@ -12,8 +12,12 @@ const financeExpenseForm = reactive({ ...financeExpenseFormDefaults })
 const expenses = ref([])
 const expenseCategories = ref([])
 
+const todayExpenses = computed(() =>
+  expenses.value.filter((expense) => expense.dataDespesa === todayIsoDate())
+)
+
 const financeExpenseRows = computed(() =>
-  expenses.value.map((expense) => ({
+  todayExpenses.value.map((expense) => ({
     id: expense.id,
     category: expense.categoria?.nome ?? '',
     observation: expense.descricaoDespesa ?? '',
@@ -29,7 +33,7 @@ const financeCategoryOptions = computed(() =>
 const sumRows = (rows, key) =>
   formatCurrency(rows.reduce((total, row) => total + Number(row[key] ?? 0), 0))
 
-const expenseTotalLabel = computed(() => `TOTAL: ${sumRows(expenses.value, 'valorDespesa')}`)
+const expenseTotalLabel = computed(() => `TOTAL: ${sumRows(todayExpenses.value, 'valorDespesa')}`)
 
 const loadExpenses = async () => {
   expenses.value = await api.get('/despesas')
@@ -84,7 +88,7 @@ onMounted(async () => {
     :rows="financeExpenseRows"
     :category-options="financeCategoryOptions"
     action-label="Adicionar"
-    table-title="Despesas de hoje:"
+    table-title="Despesas do dia:"
     :total-label="expenseTotalLabel"
     @save="save"
     @cancel="cancel"

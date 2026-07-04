@@ -8,7 +8,7 @@ import {
   paymentMethodOptions
 } from '../config/options.js'
 import { financeContributionFormDefaults } from '../forms/defaultValues.js'
-import { api, formatCurrency, formatDate, isFutureDate, toIsoDate } from '../services/api.js'
+import { api, formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()
 
@@ -21,8 +21,12 @@ const contributorNameOptions = computed(() =>
     .sort((first, second) => first.localeCompare(second, 'pt-BR'))
 )
 
+const todayContributions = computed(() =>
+  contributions.value.filter((contribution) => contribution.dataDePagamento === todayIsoDate())
+)
+
 const financeContributionRows = computed(() =>
-  contributions.value.map((contribution) => ({
+  todayContributions.value.map((contribution) => ({
     id: contribution.id,
     contributor: contribution.contribuinte?.nomeCompleto ?? '',
     category: contribution.tipoContribuicao,
@@ -35,7 +39,7 @@ const financeContributionRows = computed(() =>
 const sumRows = (rows, key) =>
   formatCurrency(rows.reduce((total, row) => total + Number(row[key] ?? 0), 0))
 
-const contributionTotalLabel = computed(() => `TOTAL: ${sumRows(contributions.value, 'valorContribuicao')}`)
+const contributionTotalLabel = computed(() => `TOTAL: ${sumRows(todayContributions.value, 'valorContribuicao')}`)
 
 const loadContributions = async () => {
   contributions.value = await api.get('/contribuicoes')
@@ -110,7 +114,7 @@ onMounted(async () => {
     :contribution-type-options="contributionTypeOptions"
     :payment-method-options="paymentMethodOptions"
     action-label="Adicionar"
-    table-title="Contribuições de hoje:"
+    table-title="Contribuições do dia:"
     :total-label="contributionTotalLabel"
     @save="save"
     @cancel="cancel"

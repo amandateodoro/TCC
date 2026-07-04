@@ -190,7 +190,8 @@ export class InitialSchema1714932000000 implements MigrationInterface {
         ('Limpeza e Higiene'),
         ('Material de Escritório'),
         ('Manutenção'),
-        ('Alimentação')
+        ('Alimentação'),
+        ('Outro')
     `);
   }
 
