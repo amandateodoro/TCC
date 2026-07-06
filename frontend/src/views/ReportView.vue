@@ -179,8 +179,27 @@ const cancelReport = () => {
   generatedReportType.value = ''
 }
 
-const printReport = () => {
-  window.print()
+const downloadPdf = async () => {
+  try {
+    const params = new URLSearchParams({
+      tipo: reportForm.type,
+      inicio: reportForm.startDate,
+      fim: reportForm.endDate
+    })
+    const blob = await api.getBlob(`/relatorios/pdf?${params.toString()}`)
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+
+    link.href = url
+    link.download = `relatorio-${normalizedReportType.value || 'geral'}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+    showToast('PDF gerado com sucesso.', 'success')
+  } catch (error) {
+    showToast(error.message, 'danger')
+  }
 }
 </script>
 
@@ -203,10 +222,10 @@ const printReport = () => {
         <button
           type="button"
           class="action-button action-button--secondary report-print-button"
-          @click="printReport"
+          @click="downloadPdf"
         >
           <AppIcon name="reportFile" />
-          <span>Imprimir</span>
+          <span>Baixar PDF</span>
         </button>
       </header>
 

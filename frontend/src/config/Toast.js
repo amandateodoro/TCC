@@ -6,7 +6,7 @@ function Toast(options) {
   this.options = options
   this.options.type = options.type || 'default'
   this.options.closeLabel = options.closeLabel || 'Fechar'
-  this.options.duration = options.duration ?? 5000
+  this.options.duration = options.duration ?? 3000
 
   this.toastContainerEl = document.querySelector('.toastjs-container')
   this.toastEl = document.querySelector('.toastjs')
@@ -28,7 +28,7 @@ Toast.prototype._createElements = function () {
     this.toastContainerEl.appendChild(this.toastEl)
     document.body.appendChild(this.toastContainerEl)
 
-    setTimeout(() => resolve(), 500)
+    setTimeout(() => resolve(), 400)
   })
 }
 
