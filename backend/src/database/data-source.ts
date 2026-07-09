@@ -14,6 +14,5 @@ export default new DataSource({
   type: 'mysql',
   ...databaseConfig,
   entities: [Usuario, Profissao, Contribuinte, Contribuicao, CategoriaDespesa, Despesa, Oferta],
-  migrations: ['src/database/migrations/*.ts'],
   synchronize: false,
 });

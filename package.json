@@ -10,9 +10,6 @@
     "build:frontend": "npm --prefix frontend run build",
     "build:backend": "npm --prefix backend run build",
     "preview": "npm --prefix frontend run preview",
-    "migration:run": "npm --prefix backend run migration:run",
-    "migration:revert": "npm --prefix backend run migration:revert",
-    "migration:show": "npm --prefix backend run migration:show",
     "profissao:import": "npm --prefix backend run profissao:import --"
   }
 }

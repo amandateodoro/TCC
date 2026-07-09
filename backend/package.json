@@ -8,13 +8,7 @@
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
     "db:create": "ts-node -r tsconfig-paths/register src/database/create-database.ts",
-    "typeorm": "typeorm-ts-node-commonjs",
-    "migration:create": "typeorm migration:create",
-    "migration:generate": "npm run db:create && npm run typeorm -- migration:generate src/database/migrations/AutoMigration -d src/database/data-source.ts",
-    "migration:run": "npm run db:create && npm run typeorm -- migration:run -d src/database/data-source.ts",
-    "migration:revert": "npm run typeorm -- migration:revert -d src/database/data-source.ts",
-    "migration:show": "npm run typeorm -- migration:show -d src/database/data-source.ts",
-    "db:setup": "npm run migration:run && npm run profissao:import",
+    "db:setup": "npm run db:create && npm run profissao:import",
     "profissao:import": "npm run db:create && ts-node -r tsconfig-paths/register src/profissao/import-cbo.ts"
   },
   "dependencies": {

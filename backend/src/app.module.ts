@@ -39,7 +39,6 @@ import { RolesGuard } from './auth/roles.guard';
           type: 'mysql',
           ...databaseConfig,
           autoLoadEntities: true,
-          migrationsRun: config.get<string>('DB_MIGRATIONS_RUN', 'false') === 'true',
           synchronize: config.get<string>('DB_SYNCHRONIZE', 'false') === 'true',
         };
       },
