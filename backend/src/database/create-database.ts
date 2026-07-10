@@ -1,8 +1,7 @@
-import { ensureDatabaseExists } from './ensure-database';
-import { loadDatabaseEnv } from './env';
+import { ensureDatabaseExists, getDatabaseConfig } from './database.config';
 
 async function bootstrap() {
-  const config = loadDatabaseEnv();
+  const config = getDatabaseConfig();
   await ensureDatabaseExists(config);
   console.log(`Database "${config.database}" pronto.`);
 }

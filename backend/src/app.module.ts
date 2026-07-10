@@ -12,7 +12,7 @@ import { OfertaModule } from './oferta/oferta.module';
 import { ProfissaoModule } from './profissao/profissao.module';
 import { RelatorioModule } from './relatorio/relatorio.module';
 import { UsuarioModule } from './usuario/usuario.module';
-import { ensureDatabaseExists } from './database/ensure-database';
+import { ensureDatabaseExists, getDatabaseConfig } from './database/database.config';
 import { JwtAuthGuard } from './auth/auth.jwt';
 import { RolesGuard } from './auth/auth.roles';
 
@@ -25,13 +25,7 @@ import { RolesGuard } from './auth/auth.roles';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
-        const databaseConfig = {
-          host: config.get<string>('DB_HOST', 'localhost'),
-          port: config.get<number>('DB_PORT', 3306),
-          username: config.get<string>('DB_USER', 'root'),
-          password: config.get<string>('DB_PASSWORD', 'root'),
-          database: config.get<string>('DB_NAME', 'tcc'),
-        };
+        const databaseConfig = getDatabaseConfig(config);
 
         await ensureDatabaseExists(databaseConfig);
 

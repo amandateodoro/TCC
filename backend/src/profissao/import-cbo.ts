@@ -1,7 +1,10 @@
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { parse } from 'csv-parse/sync';
-import dataSource from '../database/data-source';
+import { DataSource } from 'typeorm';
+import { Contribuicao } from '../contribuicao/contribuicao.entity';
+import { Contribuinte } from '../contribuinte/contribuinte.entity';
+import { getDatabaseConfig } from '../database/database.config';
 import { Profissao } from './profissao.entity';
 
 type CsvRow = Record<string, string>;
@@ -47,6 +50,13 @@ async function bootstrap() {
       `Cabecalhos nao reconhecidos. Esperados codigo CBO e nome/titulo. Encontrados: ${Object.keys(rows[0]).join(', ')}`,
     );
   }
+
+  const dataSource = new DataSource({
+    type: 'mysql',
+    ...getDatabaseConfig(),
+    entities: [Profissao, Contribuinte, Contribuicao],
+    synchronize: false,
+  });
 
   await dataSource.initialize();
   const repository = dataSource.getRepository(Profissao);

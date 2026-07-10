@@ -29,7 +29,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 }
 
-// Ensina o Passport/Nest a ler o token JWT e transformar o conteudo em request.user.
+// Lê o token JWT e transforma em request.user.
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(config: ConfigService) {

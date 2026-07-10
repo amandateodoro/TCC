@@ -2,26 +2,26 @@ import { CanActivate, ExecutionContext, Injectable, SetMetadata } from '@nestjs/
 import { Reflector } from '@nestjs/core';
 import { NivelAcesso } from '../usuario/usuario.entity';
 
-// Define o formato do usuario autenticado que fica disponivel em request.user.
+// Define o formato do usuario autenticado que fica disponível em request.user.
 export type AuthUser = {
   id: number;
   nomeDeUsuario: string;
   nivelAcesso: NivelAcesso;
 };
 
-// Chave usada pelo Nest para marcar rotas publicas, ou seja, rotas sem login obrigatorio.
+// Para marcar rotas sem login obrigatório.
 export const IS_PUBLIC_KEY = 'isPublic';
 
-// Marca uma rota como publica. Exemplo: a rota de login usa @Public().
+// Setar uma rota como publica.
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
-// Chave usada pelo Nest para guardar quais niveis de acesso uma rota exige.
+// Para guardar quais níveis de acesso uma rota exige.
 export const ROLES_KEY = 'roles';
 
-// Marca uma rota com os niveis permitidos. Exemplo: @Roles(NivelAcesso.ADMINISTRADOR).
+// Setar uma rota com os níveis de acesso permitidos.
 export const Roles = (...roles: NivelAcesso[]) => SetMetadata(ROLES_KEY, roles);
 
-// Verifica se o usuario logado possui o nivel de acesso exigido pela rota.
+// Verifica se o usuário logado possui o nível de acesso exigido pela rota.
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
