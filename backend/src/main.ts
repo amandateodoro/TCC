@@ -12,7 +12,7 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('TCC API')
-    .setDescription('Documentacao da API do sistema')
+    .setDescription('Documentação da API do sistema')
     .setVersion('1.0')
     .addBearerAuth()
     .addSecurityRequirements('bearer')
