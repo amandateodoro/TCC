@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ProfissaoService } from './profissao.service';
 
-@ApiTags('Profissoes')
+@ApiTags('Profissões')
 @Controller('profissoes')
 export class ProfissaoController {
   constructor(private readonly service: ProfissaoService) {}
@@ -10,13 +10,13 @@ export class ProfissaoController {
   @ApiQuery({
     name: 'search',
     required: false,
-    description: 'Filtra profissoes por nome ou codigo CBO.',
+    description: 'Nome ou código CBO.',
     type: String,
   })
   @ApiQuery({
     name: 'limit',
     required: false,
-    description: 'Quantidade maxima de profissoes retornadas.',
+    description: 'Número máximo de profissões retornadas.',
     type: Number,
   })
   @Get()

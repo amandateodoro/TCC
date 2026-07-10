@@ -4,7 +4,7 @@ import { ContribuicaoService } from './contribuicao.service';
 import { CreateContribuicaoDto } from './dto/create-contribuicao.dto';
 import { UpdateContribuicaoDto } from './dto/update-contribuicao.dto';
 
-@ApiTags('Contribuicoes')
+@ApiTags('Contribuições')
 @Controller('contribuicoes')
 export class ContribuicaoController {
   constructor(private readonly service: ContribuicaoService) {}

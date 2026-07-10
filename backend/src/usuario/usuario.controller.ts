@@ -6,7 +6,7 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { NivelAcesso } from './usuario.entity';
 import { UsuarioService } from './usuario.service';
 
-@ApiTags('Usuarios')
+@ApiTags('Usuários')
 @Controller('usuarios')
 export class UsuarioController {
   constructor(private readonly service: UsuarioService) {}

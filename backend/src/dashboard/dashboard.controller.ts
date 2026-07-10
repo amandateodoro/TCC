@@ -10,13 +10,13 @@ export class DashboardController {
   @ApiQuery({
     name: 'ano',
     required: false,
-    description: 'Ano usado no resumo. Se nao for informado, usa o ano atual.',
+    description: 'Digite o ano. Se não for informado, usa o ano atual.',
     type: Number,
   })
   @ApiQuery({
     name: 'mes',
     required: false,
-    description: 'Mes usado no resumo. Se nao for informado, usa o mes atual.',
+    description: 'Digite o mês. Se não for informado, usa o mês atual.',
     type: Number,
   })
   @Get()

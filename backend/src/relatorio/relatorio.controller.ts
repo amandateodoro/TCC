@@ -3,7 +3,7 @@ import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { RelatorioService } from './relatorio.service';
 
-@ApiTags('Relatorios')
+@ApiTags('Relatórios')
 @Controller('relatorios')
 export class RelatorioController {
   constructor(private readonly service: RelatorioService) {}
