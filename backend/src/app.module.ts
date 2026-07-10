@@ -13,8 +13,8 @@ import { ProfissaoModule } from './profissao/profissao.module';
 import { RelatorioModule } from './relatorio/relatorio.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { ensureDatabaseExists } from './database/ensure-database';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { RolesGuard } from './auth/roles.guard';
+import { JwtAuthGuard } from './auth/auth.jwt';
+import { RolesGuard } from './auth/auth.roles';
 
 @Module({
   imports: [

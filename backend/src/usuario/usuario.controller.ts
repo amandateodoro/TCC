@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthUser } from '../auth/auth-user.type';
-import { Roles } from '../auth/roles.decorator';
+import { AuthUser, Roles } from '../auth/auth.roles';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { NivelAcesso } from './usuario.entity';

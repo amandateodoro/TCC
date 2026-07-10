@@ -1,13 +1,38 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { CategoriaDespesaService } from '../categoria-despesa/categoria-despesa.service';
-import { assertNotFutureDate } from '../common/assert-not-future-date';
-import { parseMoney } from '../common/parse-money';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Despesa } from './despesa.entity';
 import { CreateDespesaDto } from './dto/create-despesa.dto';
 import { UpdateDespesaDto } from './dto/update-despesa.dto';
+
+function parseMoney(value: string | number): string {
+  if (typeof value === 'number') {
+    return value.toFixed(2);
+  }
+
+  const normalized = value
+    .replace(/[^\d,.-]/g, '')
+    .replace(/\./g, '')
+    .replace(',', '.');
+
+  const parsed = Number(normalized);
+
+  if (Number.isNaN(parsed)) {
+    return '0.00';
+  }
+
+  return parsed.toFixed(2);
+}
+
+function assertNotFutureDate(date: string | undefined, fieldLabel: string) {
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (date && date > today) {
+    throw new BadRequestException(`${fieldLabel} nao pode ser uma data futura.`);
+  }
+}
 
 @Injectable()
 export class DespesaService {
