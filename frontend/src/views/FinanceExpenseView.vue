@@ -60,7 +60,7 @@ const save = async () => {
       usuarioId: currentUser.value?.id
     })
     Object.assign(financeExpenseForm, financeExpenseFormDefaults)
-    await loadExpenses()
+    await Promise.all([loadExpenses(), loadExpenseCategories()])
     showToast('Despesa adicionada com sucesso.', 'success')
   } catch (error) {
     showToast(error.message, 'danger')

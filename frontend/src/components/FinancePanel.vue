@@ -144,9 +144,9 @@ const displayValue = (value) => {
           <FormField
             v-model="form.category"
             label="Categoria"
-            placeholder="Selecione a categoria"
-            as="select"
-            :options="categoryOptions"
+            placeholder="Selecione ou digite uma categoria"
+            as="combobox"
+            :list-options="categoryOptions"
           />
           <FormField
             v-model="form.observation"
