@@ -1,8 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { DespesaService } from './despesa.service';
 import { CreateDespesaDto } from './dto/create-despesa.dto';
-import { UpdateDespesaDto } from './dto/update-despesa.dto';
 
 @ApiTags('Despesas')
 @Controller('despesas')
@@ -31,13 +30,4 @@ export class DespesaController {
     return this.service.findAll(inicio, fim);
   }
 
-  @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateDespesaDto) {
-    return this.service.update(id, dto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.service.remove(id);
-  }
 }

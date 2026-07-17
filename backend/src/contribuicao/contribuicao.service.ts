@@ -1,11 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { ContribuinteService } from '../contribuinte/contribuinte.service';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Contribuicao } from './contribuicao.entity';
 import { CreateContribuicaoDto } from './dto/create-contribuicao.dto';
-import { UpdateContribuicaoDto } from './dto/update-contribuicao.dto';
 
 function parseMoney(value: string | number): string {
   if (typeof value === 'number') {
@@ -53,28 +52,6 @@ export class ContribuicaoService {
       where: inicio && fim ? { dataDePagamento: Between(inicio, fim) } : {},
       order: { dataDePagamento: 'DESC' },
     });
-  }
-
-  async findEntity(id: number) {
-    const contribuicao = await this.repository.findOneBy({ id });
-
-    if (!contribuicao) {
-      throw new NotFoundException('Contribuicao nao encontrada.');
-    }
-
-    return contribuicao;
-  }
-
-  async update(id: number, dto: UpdateContribuicaoDto) {
-    const contribuicao = await this.findEntity(id);
-    Object.assign(contribuicao, await this.toEntityPayload(dto));
-    return this.repository.save(contribuicao);
-  }
-
-  async remove(id: number) {
-    const contribuicao = await this.findEntity(id);
-    await this.repository.remove(contribuicao);
-    return { deleted: true };
   }
 
   sumByMonth(year: number, month: number) {

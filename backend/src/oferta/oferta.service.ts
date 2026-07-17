@@ -1,9 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { UsuarioService } from '../usuario/usuario.service';
 import { CreateOfertaDto } from './dto/create-oferta.dto';
-import { UpdateOfertaDto } from './dto/update-oferta.dto';
 import { Oferta } from './oferta.entity';
 
 function parseMoney(value: string | number): string {
@@ -51,28 +50,6 @@ export class OfertaService {
       where: inicio && fim ? { dataOferta: Between(inicio, fim) } : {},
       order: { dataOferta: 'DESC' },
     });
-  }
-
-  async findEntity(id: number) {
-    const oferta = await this.repository.findOneBy({ id });
-
-    if (!oferta) {
-      throw new NotFoundException('Oferta nao encontrada.');
-    }
-
-    return oferta;
-  }
-
-  async update(id: number, dto: UpdateOfertaDto) {
-    const oferta = await this.findEntity(id);
-    Object.assign(oferta, await this.toEntityPayload(dto));
-    return this.repository.save(oferta);
-  }
-
-  async remove(id: number) {
-    const oferta = await this.findEntity(id);
-    await this.repository.remove(oferta);
-    return { deleted: true };
   }
 
   sumByMonth(year: number, month: number) {
