@@ -4,7 +4,8 @@ import FinancePanel from '../components/FinancePanel.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
 import { financeExpenseFormDefaults } from '../config/defaultValues.js'
-import { api, formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../services/api.js'
+import { formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../common/dataFormatters.js'
+import { api } from '../services/api.js'
 
 const { currentUser } = useAuth()
 

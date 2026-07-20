@@ -8,7 +8,8 @@ import {
   paymentMethodOptions
 } from '../config/options.js'
 import { financeContributionFormDefaults } from '../config/defaultValues.js'
-import { api, formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../services/api.js'
+import { formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../common/dataFormatters.js'
+import { api } from '../services/api.js'
 
 const { currentUser } = useAuth()
 

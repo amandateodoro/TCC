@@ -5,7 +5,8 @@ import ReportPanel from '../components/ReportPanel.vue'
 import { showToast } from '../composables/useToast.js'
 import { reportTypeOptions } from '../config/options.js'
 import { reportFormDefaults } from '../config/defaultValues.js'
-import { api, formatCurrency, formatDate } from '../services/api.js'
+import { formatCurrency, formatDate } from '../common/dataFormatters.js'
+import { api } from '../services/api.js'
 
 const reportForm = reactive({ ...reportFormDefaults })
 const reportRows = ref([])

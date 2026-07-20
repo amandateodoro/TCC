@@ -4,7 +4,8 @@ import { useRouter } from 'vue-router'
 import AppModal from '../components/AppModal.vue'
 import ConsultationTable from '../components/ConsultationTable.vue'
 import { showToast } from '../composables/useToast.js'
-import { api, formatDate } from '../services/api.js'
+import { formatDate } from '../common/dataFormatters.js'
+import { api } from '../services/api.js'
 
 const router = useRouter()
 const contributorSearch = ref('')

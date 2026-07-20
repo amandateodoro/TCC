@@ -13,7 +13,8 @@ import {
   expenseDistribution,
   monthlyRevenueSeries
 } from '../config/mockData.js'
-import { api, formatCurrency, formatDate } from '../services/api.js'
+import { formatCurrency, formatDate } from '../common/dataFormatters.js'
+import { api } from '../services/api.js'
 
 const router = useRouter()
 const { currentUser } = useAuth()
