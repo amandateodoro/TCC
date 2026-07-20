@@ -3,7 +3,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import FinancePanel from '../components/FinancePanel.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
-import { financeExpenseFormDefaults } from '../forms/defaultValues.js'
+import { financeExpenseFormDefaults } from '../config/defaultValues.js'
 import { api, formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()

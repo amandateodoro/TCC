@@ -12,7 +12,7 @@ import { quickActions } from '../config/navigation.js'
 import {
   expenseDistribution,
   monthlyRevenueSeries
-} from '../mock/appData.js'
+} from '../config/mockData.js'
 import { api, formatCurrency, formatDate } from '../services/api.js'
 
 const router = useRouter()

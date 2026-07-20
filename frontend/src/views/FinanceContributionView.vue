@@ -7,7 +7,7 @@ import {
   contributionTypeOptions,
   paymentMethodOptions
 } from '../config/options.js'
-import { financeContributionFormDefaults } from '../forms/defaultValues.js'
+import { financeContributionFormDefaults } from '../config/defaultValues.js'
 import { api, formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()

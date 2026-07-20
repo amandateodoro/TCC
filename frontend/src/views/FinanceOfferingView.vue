@@ -4,7 +4,7 @@ import FinancePanel from '../components/FinancePanel.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
 import { celebrationTypeOptions } from '../config/options.js'
-import { financeOfferingFormDefaults } from '../forms/defaultValues.js'
+import { financeOfferingFormDefaults } from '../config/defaultValues.js'
 import { api, formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../services/api.js'
 
 const { currentUser } = useAuth()

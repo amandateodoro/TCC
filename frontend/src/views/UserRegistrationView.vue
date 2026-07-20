@@ -3,7 +3,7 @@ import { computed, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import UserRegistrationForm from '../components/UserRegistrationForm.vue'
 import { showToast } from '../composables/useToast.js'
-import { userFormDefaults } from '../forms/defaultValues.js'
+import { userFormDefaults } from '../config/defaultValues.js'
 import { api } from '../services/api.js'
 
 const route = useRoute()

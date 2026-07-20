@@ -4,7 +4,7 @@ import AppIcon from '../components/AppIcon.vue'
 import ReportPanel from '../components/ReportPanel.vue'
 import { showToast } from '../composables/useToast.js'
 import { reportTypeOptions } from '../config/options.js'
-import { reportFormDefaults } from '../forms/defaultValues.js'
+import { reportFormDefaults } from '../config/defaultValues.js'
 import { api, formatCurrency, formatDate } from '../services/api.js'
 
 const reportForm = reactive({ ...reportFormDefaults })
