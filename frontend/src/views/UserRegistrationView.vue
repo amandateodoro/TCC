@@ -3,7 +3,7 @@ import { computed, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import UserRegistrationForm from '../components/UserRegistrationForm.vue'
 import { showToast } from '../composables/useToast.js'
-import { userFormDefaults } from '../config/defaultValues.js'
+import { REQUIRED_FIELDS_MESSAGE, userFormDefaults } from '../config/defaultValues.js'
 import { api } from '../services/api.js'
 
 const route = useRoute()
@@ -38,6 +38,20 @@ const loadUser = async () => {
 }
 
 const save = async () => {
+  const requiredFields = [
+    userForm.fullName,
+    userForm.username,
+    userForm.password,
+    userForm.email,
+    userForm.phone,
+    userForm.accessLevel
+  ]
+
+  if (!isEditing.value && requiredFields.some((value) => !String(value).trim())) {
+    showToast(REQUIRED_FIELDS_MESSAGE, 'danger')
+    return
+  }
+
   try {
     const payload = {
       nomeCompleto: userForm.fullName,

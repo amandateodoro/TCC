@@ -7,7 +7,10 @@ import {
   contributionTypeOptions,
   paymentMethodOptions
 } from '../config/options.js'
-import { financeContributionFormDefaults } from '../config/defaultValues.js'
+import {
+  financeContributionFormDefaults,
+  REQUIRED_FIELDS_MESSAGE
+} from '../config/defaultValues.js'
 import { formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../common/dataFormatters.js'
 import { api } from '../services/api.js'
 
@@ -51,6 +54,19 @@ const loadContributors = async () => {
 }
 
 const save = async () => {
+  const requiredFields = [
+    financeContributionForm.contributor,
+    financeContributionForm.contributionType,
+    financeContributionForm.amount,
+    financeContributionForm.paymentMethod,
+    financeContributionForm.paymentDate
+  ]
+
+  if (requiredFields.some((value) => !String(value).trim())) {
+    showToast(REQUIRED_FIELDS_MESSAGE, 'danger')
+    return
+  }
+
   try {
     const contributor = contributors.value.find(
       (item) =>
@@ -67,11 +83,6 @@ const save = async () => {
 
     if (isFutureDate(paymentDate)) {
       showToast('A data de pagamento não pode ser futura.', 'danger')
-      return
-    }
-
-    if (!financeContributionForm.paymentMethod) {
-      showToast('Selecione a forma de pagamento.', 'warning')
       return
     }
 

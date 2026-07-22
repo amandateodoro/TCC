@@ -4,7 +4,10 @@ import FinancePanel from '../components/FinancePanel.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
 import { celebrationTypeOptions } from '../config/options.js'
-import { financeOfferingFormDefaults } from '../config/defaultValues.js'
+import {
+  financeOfferingFormDefaults,
+  REQUIRED_FIELDS_MESSAGE
+} from '../config/defaultValues.js'
 import { formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../common/dataFormatters.js'
 import { api } from '../services/api.js'
 
@@ -37,6 +40,17 @@ const loadOfferings = async () => {
 }
 
 const save = async () => {
+  const requiredFields = [
+    financeOfferingForm.totalAmount,
+    financeOfferingForm.celebrationType,
+    financeOfferingForm.date
+  ]
+
+  if (requiredFields.some((value) => !String(value).trim())) {
+    showToast(REQUIRED_FIELDS_MESSAGE, 'danger')
+    return
+  }
+
   try {
     const offeringDate = toIsoDate(financeOfferingForm.date)
 

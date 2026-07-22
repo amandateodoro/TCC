@@ -14,7 +14,6 @@ const selectedUser = ref(null)
 const userConsultationHeaders = [
   { key: 'name', label: 'Nome' },
   { key: 'phone', label: 'Telefone' },
-  { key: 'birthDate', label: 'Data de Nascimento' },
   { key: 'accessLevel', label: 'Nível de Acesso' }
 ]
 
@@ -23,7 +22,6 @@ const consultationUserRows = computed(() =>
     id: user.id,
     name: user.nomeCompleto,
     phone: user.telefone ?? '',
-    birthDate: '',
     accessLevel: user.nivelAcesso
   }))
 )
@@ -60,7 +58,7 @@ const confirmDeleteRow = async () => {
   try {
     await api.delete(`/usuarios/${row.id}`)
     await loadUsers()
-    showToast(`${row.name} excluído com sucesso.`, 'success')
+    showToast(`${row.name} desativado com sucesso.`, 'success')
     cancelDeleteRow()
   } catch (error) {
     showToast(error.message, 'danger')
@@ -91,11 +89,11 @@ onMounted(async () => {
 
   <AppModal
     v-if="selectedUser"
-    title="Excluir usuário"
+    title="Desativar usuário"
     :subtitle="selectedUser.name"
     @close="cancelDeleteRow"
   >
-    <p>Deseja realmente excluir este usuário?</p>
+    <p>Deseja realmente desativar este usuário?</p>
 
     <template #footer>
       <div class="form-actions">
@@ -103,7 +101,7 @@ onMounted(async () => {
           Cancelar
         </button>
         <button type="button" class="action-button action-button--compact action-button--danger" @click="confirmDeleteRow">
-          Excluir
+          Desativar
         </button>
       </div>
     </template>

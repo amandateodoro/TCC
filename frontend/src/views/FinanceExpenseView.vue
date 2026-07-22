@@ -3,7 +3,10 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import FinancePanel from '../components/FinancePanel.vue'
 import { useAuth } from '../composables/useAuth.js'
 import { showToast } from '../composables/useToast.js'
-import { financeExpenseFormDefaults } from '../config/defaultValues.js'
+import {
+  financeExpenseFormDefaults,
+  REQUIRED_FIELDS_MESSAGE
+} from '../config/defaultValues.js'
 import { formatCurrency, formatDate, isFutureDate, todayIsoDate, toIsoDate } from '../common/dataFormatters.js'
 import { api } from '../services/api.js'
 
@@ -45,6 +48,17 @@ const loadExpenseCategories = async () => {
 }
 
 const save = async () => {
+  const requiredFields = [
+    financeExpenseForm.category,
+    financeExpenseForm.amount,
+    financeExpenseForm.date
+  ]
+
+  if (requiredFields.some((value) => !String(value).trim())) {
+    showToast(REQUIRED_FIELDS_MESSAGE, 'danger')
+    return
+  }
+
   try {
     const expenseDate = toIsoDate(financeExpenseForm.date)
 

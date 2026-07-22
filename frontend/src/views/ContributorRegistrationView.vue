@@ -3,7 +3,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ContributorRegistrationForm from '../components/ContributorRegistrationForm.vue'
 import { showToast } from '../composables/useToast.js'
-import { contributorFormDefaults } from '../config/defaultValues.js'
+import { contributorFormDefaults, REQUIRED_FIELDS_MESSAGE } from '../config/defaultValues.js'
 import { api } from '../services/api.js'
 
 const route = useRoute()
@@ -89,11 +89,11 @@ const buildPayload = () => {
   const spouseProfessionId = findProfessionId(contributorForm.spouseProfession)
 
   if (!professionId) {
-    throw new Error('Selecione uma profissão cadastrada.')
+    throw new Error(REQUIRED_FIELDS_MESSAGE)
   }
 
   if (contributorForm.married && !spouseProfessionId) {
-    throw new Error('Selecione uma profissão cadastrada para o cônjuge.')
+    throw new Error(REQUIRED_FIELDS_MESSAGE)
   }
 
   return {
@@ -111,6 +111,28 @@ const buildPayload = () => {
 }
 
 const save = async () => {
+  const requiredFields = [
+    contributorForm.fullName,
+    contributorForm.address,
+    contributorForm.phone,
+    contributorForm.birthDate,
+    contributorForm.profession
+  ]
+
+  if (contributorForm.married) {
+    requiredFields.push(
+      contributorForm.spouseName,
+      contributorForm.spousePhone,
+      contributorForm.spouseBirthDate,
+      contributorForm.spouseProfession
+    )
+  }
+
+  if (!isEditing.value && requiredFields.some((value) => !String(value).trim())) {
+    showToast(REQUIRED_FIELDS_MESSAGE, 'danger')
+    return
+  }
+
   try {
     const payload = buildPayload()
 

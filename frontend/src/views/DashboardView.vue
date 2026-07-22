@@ -81,6 +81,14 @@ const displayBirthdays = computed(() => {
   return [...birthdays.value].sort((a, b) => Number(a.date.split('/')[0]) - Number(b.date.split('/')[0]))
 })
 
+const allowedQuickActions = computed(() => {
+  if (currentUser.value?.nivelAcesso === 'Pastoral do Dízimo') {
+    return quickActions.filter((action) => action.targetRoute === 'finance-contribution')
+  }
+
+  return quickActions
+})
+
 const navigateTo = (screen) => {
   router.push({ name: screen })
 }
@@ -109,7 +117,7 @@ onMounted(async () => {
       </div>
       <div class="dashboard__quick">
         <ActionButton
-          v-for="action in quickActions"
+          v-for="action in allowedQuickActions"
           :key="action.id"
           :label="action.label"
           @click="navigateTo(action.targetRoute)"

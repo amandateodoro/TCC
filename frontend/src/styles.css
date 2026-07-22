@@ -841,149 +841,6 @@ button {
   gap: 1.1rem;
 }
 
-.calendar-card {
-  background: var(--bg-surface);
-  border-radius: var(--radius-medium);
-  box-shadow: var(--shadow-soft);
-  padding: 1.2rem 1.35rem;
-}
-
-.calendar-card__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.calendar-card__header h3 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1a2242;
-  text-transform: capitalize;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.35rem;
-  text-align: center;
-}
-
-.calendar-grid--head span {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  padding-bottom: 0.35rem;
-}
-
-.calendar-grid--body {
-  gap: 0.45rem;
-}
-
-.calendar-cell {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  min-height: 58px;
-  padding: 0.28rem 0.22rem 0.32rem;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  color: var(--text-primary);
-  transition: background-color 0.15s ease;
-}
-
-.calendar-cell--empty {
-  display: block;
-  min-height: 58px;
-}
-
-.calendar-cell:not(.calendar-cell--empty):hover {
-  background: rgba(173, 136, 102, 0.08);
-}
-
-.calendar-cell--event {
-  background: rgba(173, 136, 102, 0.14);
-}
-
-.calendar-cell__day {
-  align-self: center;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.calendar-cell--event .calendar-cell__day {
-  color: var(--brand-strong);
-}
-
-.calendar-cell__events {
-  list-style: none;
-  margin: 0.22rem 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.12rem;
-  width: 100%;
-}
-
-.calendar-cell__event {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding: 0.1rem 0.28rem;
-  border-radius: 4px;
-  background: rgba(173, 136, 102, 0.22);
-  color: var(--brand-strong);
-  font-size: 0.62rem;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.calendar-cell__event--more {
-  text-align: center;
-  background: rgba(173, 136, 102, 0.12);
-}
-
-.calendar-cell__add {
-  position: absolute;
-  top: 0.18rem;
-  right: 0.18rem;
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: var(--brand);
-  color: #f8f9fb;
-  cursor: pointer;
-  opacity: 0;
-  transform: scale(0.85);
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease,
-    filter 0.15s ease;
-  box-shadow: 0 4px 10px rgba(173, 136, 102, 0.28);
-}
-
-.calendar-cell__add--visible {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.calendar-cell__add:hover {
-  filter: brightness(1.05);
-}
-
-.calendar-cell__add .app-icon {
-  width: 14px;
-  height: 14px;
-  flex: 0 0 14px;
-}
-
 .app-modal {
   position: fixed;
   inset: 0;
@@ -1581,7 +1438,7 @@ button {
 }
 
 .consultation-table__row--user {
-  grid-template-columns: minmax(140px, 1.35fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) 88px;
+  grid-template-columns: minmax(180px, 1.45fr) minmax(140px, 1.05fr) minmax(140px, 1.05fr) 88px;
 }
 
 .consultation-table__row--contributor {
@@ -1675,7 +1532,8 @@ button {
   color: var(--brand-strong);
 }
 
-.badge--secretaria {
+.badge--secretaria,
+.badge--pastoral-do-dizimo {
   background: rgba(109, 115, 134, 0.16);
   color: var(--text-secondary);
 }
@@ -1976,7 +1834,7 @@ button {
   }
 
   .consultation-table__row--user {
-    grid-template-columns: minmax(120px, 1.25fr) minmax(100px, 1fr) minmax(110px, 1fr) minmax(110px, 1fr) 72px;
+    grid-template-columns: minmax(150px, 1.35fr) minmax(120px, 1fr) minmax(120px, 1fr) 72px;
   }
 
   .consultation-table__row--contributor {
