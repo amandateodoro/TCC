@@ -1,17 +1,19 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateOfertaDto {
   @ApiProperty({
     description: 'Obrigatorio. Tipo de celebracao da oferta.',
   })
   @IsString()
+  @IsNotEmpty()
   tipoCelebracao: string;
 
   @ApiProperty({
     description: 'Obrigatorio. Valor total da oferta.',
   })
   @IsString()
+  @IsNotEmpty()
   valorTotal: string;
 
   @ApiProperty({

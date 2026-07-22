@@ -1,8 +1,10 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ACESSO_CADASTROS, Roles } from '../auth/auth.roles';
 import { ProfissaoService } from './profissao.service';
 
 @ApiTags('Profissões')
+@Roles(...ACESSO_CADASTROS)
 @Controller('profissoes')
 export class ProfissaoController {
   constructor(private readonly service: ProfissaoService) {}

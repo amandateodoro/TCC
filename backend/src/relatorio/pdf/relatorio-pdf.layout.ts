@@ -1,5 +1,3 @@
-import PDFDocument = require('pdfkit');
-
 export type PdfColumn = {
   key: string;
   label: string;

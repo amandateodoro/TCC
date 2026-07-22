@@ -12,24 +12,49 @@ const { currentUser, clearSession } = useAuth()
 
 const currentScreen = computed(() => route.name ?? 'dashboard')
 const currentScreenTitle = computed(() => screenTitles[currentScreen.value] ?? currentScreen.value)
-const isAdministrator = computed(() => currentUser.value?.nivelAcesso === 'Administrador')
+
+const routesByRole = {
+  Administrador: null,
+  Secretaria: [
+    'dashboard',
+    'contributor-registration',
+    'contributor-consultation',
+    'finance-contribution',
+    'finance-offering',
+    'finance-expense',
+    'relatorio'
+  ],
+  'Pastoral do Dízimo': [
+    'dashboard',
+    'finance-contribution',
+    'finance-offering',
+    'finance-expense',
+    'relatorio'
+  ]
+}
 
 const allowedNavigationItems = computed(() => {
-  if (isAdministrator.value) {
+  const allowedRoutes = routesByRole[currentUser.value?.nivelAcesso]
+
+  if (allowedRoutes === null) {
     return navigationItems
+  }
+
+  if (!allowedRoutes) {
+    return []
   }
 
   return navigationItems
     .map((item) => {
-      if (!item.children) {
-        return item
+      if (item.route) {
+        return allowedRoutes.includes(item.route) ? item : null
       }
 
-      const children = item.children.filter(
-        (child) => !['user-registration', 'user-consultation'].includes(child.route)
+      const children = item.children?.filter(
+        (child) => allowedRoutes.includes(child.route)
       )
 
-      return children.length ? { ...item, children } : null
+      return children?.length ? { ...item, children } : null
     })
     .filter(Boolean)
 })

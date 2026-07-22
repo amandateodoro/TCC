@@ -6,6 +6,7 @@ import { Oferta } from '../oferta/oferta.entity';
 export enum NivelAcesso {
   ADMINISTRADOR = 'Administrador',
   SECRETARIA = 'Secretaria',
+  PASTORAL_DIZIMO = 'Pastoral do Dízimo',
 }
 
 @Entity('usuario')
@@ -35,6 +36,9 @@ export class Usuario {
 
   @Column({ length: 20, nullable: true })
   telefone?: string;
+
+  @Column({ default: true })
+  ativo: boolean;
 
   @OneToMany(() => Contribuicao, (contribuicao) => contribuicao.usuarioCadastro)
   contribuicoesCadastradas: Contribuicao[];

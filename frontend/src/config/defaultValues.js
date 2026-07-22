@@ -1,3 +1,5 @@
+export const REQUIRED_FIELDS_MESSAGE = 'Preencha todos os campos obrigatórios.'
+
 export const userFormDefaults = {
   fullName: '',
   username: '',

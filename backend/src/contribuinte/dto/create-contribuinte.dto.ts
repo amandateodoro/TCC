@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsArray,
+  ArrayNotEmpty,
   IsDateString,
   IsInt,
   IsNotEmpty,
@@ -15,25 +16,28 @@ export class CreateContribuinteDto {
     description: 'Obrigatorio. Nome completo do contribuinte.',
   })
   @IsString()
+  @IsNotEmpty()
   nomeCompleto: string;
 
-  @ApiPropertyOptional({
-    description: 'Opcional. Endereco do contribuinte.',
+  @ApiProperty({
+    description: 'Obrigatorio. Endereco do contribuinte.',
   })
   @IsString()
-  endereco?: string;
+  @IsNotEmpty()
+  endereco: string;
 
-  @ApiPropertyOptional({
-    description: 'Opcional. Telefone do contribuinte.',
+  @ApiProperty({
+    description: 'Obrigatorio. Telefone do contribuinte.',
   })
   @IsString()
-  telefone?: string;
+  @IsNotEmpty()
+  telefone: string;
 
-  @ApiPropertyOptional({
-    description: 'Opcional. Data de nascimento no formato AAAA-MM-DD.',
+  @ApiProperty({
+    description: 'Obrigatorio. Data de nascimento no formato AAAA-MM-DD.',
   })
   @IsDateString()
-  dataDeNascimento?: string;
+  dataDeNascimento: string;
 
   @ApiPropertyOptional({
     description: 'Opcional. Informe true quando o contribuinte for casado.',
@@ -71,6 +75,7 @@ export class CreateContribuinteDto {
   })
   @ValidateIf((dto: CreateContribuinteDto) => dto.casado === true)
   @IsArray()
+  @ArrayNotEmpty()
   @IsInt({ each: true })
   profissaoConjugeIds?: number[];
 
@@ -79,6 +84,7 @@ export class CreateContribuinteDto {
     type: [Number],
   })
   @IsArray()
+  @ArrayNotEmpty()
   @IsInt({ each: true })
   profissaoIds: number[];
 }

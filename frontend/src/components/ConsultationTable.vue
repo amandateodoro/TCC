@@ -61,6 +61,13 @@ const displayValue = (value) => {
 
   return value
 }
+
+const accessLevelClass = (value) =>
+  `badge--${String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, '-')}`
 </script>
 
 <template>
@@ -118,7 +125,7 @@ const displayValue = (value) => {
             <span
               v-if="header.key === 'accessLevel'"
               class="badge"
-              :class="`badge--${String(row[header.key]).toLowerCase()}`"
+              :class="accessLevelClass(row[header.key])"
             >
               {{ row[header.key] }}
             </span>

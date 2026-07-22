@@ -1,9 +1,11 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ACESSO_FINANCEIRO, Roles } from '../auth/auth.roles';
 import { ContribuicaoService } from './contribuicao.service';
 import { CreateContribuicaoDto } from './dto/create-contribuicao.dto';
 
 @ApiTags('Contribuições')
+@Roles(...ACESSO_FINANCEIRO)
 @Controller('contribuicoes')
 export class ContribuicaoController {
   constructor(private readonly service: ContribuicaoService) {}

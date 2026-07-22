@@ -1,9 +1,11 @@
 import { BadRequestException, Controller, Get, Query, Res } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { ACESSO_RELATORIOS, Roles } from '../auth/auth.roles';
 import { RelatorioService } from './relatorio.service';
 
 @ApiTags('Relatórios')
+@Roles(...ACESSO_RELATORIOS)
 @Controller('relatorios')
 export class RelatorioController {
   constructor(private readonly service: RelatorioService) {}

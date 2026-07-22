@@ -1,9 +1,11 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ACESSO_FINANCEIRO, Roles } from '../auth/auth.roles';
 import { CreateOfertaDto } from './dto/create-oferta.dto';
 import { OfertaService } from './oferta.service';
 
 @ApiTags('Ofertas')
+@Roles(...ACESSO_FINANCEIRO)
 @Controller('ofertas')
 export class OfertaController {
   constructor(private readonly service: OfertaService) {}

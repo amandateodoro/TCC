@@ -9,6 +9,30 @@ export type AuthUser = {
   nivelAcesso: NivelAcesso;
 };
 
+// Permissões separadas por módulo.
+export const ACESSO_DASHBOARD: NivelAcesso[] = [
+  NivelAcesso.ADMINISTRADOR,
+  NivelAcesso.SECRETARIA,
+  NivelAcesso.PASTORAL_DIZIMO,
+];
+
+export const ACESSO_FINANCEIRO: NivelAcesso[] = [
+  NivelAcesso.ADMINISTRADOR,
+  NivelAcesso.SECRETARIA,
+  NivelAcesso.PASTORAL_DIZIMO,
+];
+
+export const ACESSO_RELATORIOS: NivelAcesso[] = [
+  NivelAcesso.ADMINISTRADOR,
+  NivelAcesso.SECRETARIA,
+  NivelAcesso.PASTORAL_DIZIMO,
+];
+
+export const ACESSO_CADASTROS: NivelAcesso[] = [
+  NivelAcesso.ADMINISTRADOR,
+  NivelAcesso.SECRETARIA,
+];
+
 // Para marcar rotas sem login obrigatório.
 export const IS_PUBLIC_KEY = 'isPublic';
 

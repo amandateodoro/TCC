@@ -6,12 +6,14 @@ export class CreateContribuicaoDto {
     description: 'Obrigatorio. Tipo da contribuicao.',
   })
   @IsString()
+  @IsNotEmpty()
   tipoContribuicao: string;
 
   @ApiProperty({
     description: 'Obrigatorio. Valor da contribuicao.',
   })
   @IsString()
+  @IsNotEmpty()
   valorContribuicao: string;
 
   @ApiProperty({

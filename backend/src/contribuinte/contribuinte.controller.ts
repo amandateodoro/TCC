@@ -1,10 +1,12 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ACESSO_CADASTROS, ACESSO_FINANCEIRO, Roles } from '../auth/auth.roles';
 import { ContribuinteService } from './contribuinte.service';
 import { CreateContribuinteDto } from './dto/create-contribuinte.dto';
 import { UpdateContribuinteDto } from './dto/update-contribuinte.dto';
 
 @ApiTags('Contribuintes')
+@Roles(...ACESSO_CADASTROS)
 @Controller('contribuintes')
 export class ContribuinteController {
   constructor(private readonly service: ContribuinteService) {}
@@ -20,6 +22,7 @@ export class ContribuinteController {
     description: 'Filtra contribuintes por nome.',
     type: String,
   })
+  @Roles(...ACESSO_FINANCEIRO)
   @Get()
   findAll(@Query('search') search?: string) {
     return this.service.findAll(search);

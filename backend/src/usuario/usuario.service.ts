@@ -25,6 +25,7 @@ export class UsuarioService {
 
   async findAll() {
     const usuarios = await this.repository.find({
+      where: { ativo: true },
       order: { nomeCompleto: 'ASC' },
     });
 
@@ -69,8 +70,9 @@ export class UsuarioService {
 
   async remove(id: number) {
     const usuario = await this.findEntity(id);
-    await this.repository.remove(usuario);
-    return { deleted: true };
+    usuario.ativo = false;
+    await this.repository.save(usuario);
+    return { disabled: true };
   }
 
   async validateLogin(nomeDeUsuario: string, senha: string) {
@@ -80,7 +82,7 @@ export class UsuarioService {
       .where('usuario.nome_de_usuario = :nomeDeUsuario', { nomeDeUsuario })
       .getOne();
 
-    if (!usuario) {
+    if (!usuario || !usuario.ativo) {
       return null;
     }
 

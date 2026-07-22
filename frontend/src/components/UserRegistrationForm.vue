@@ -15,7 +15,7 @@ defineProps({
 
 const emit = defineEmits(['save', 'cancel'])
 
-const accessOptions = ['Administrador', 'Secretaria']
+const accessOptions = ['Administrador', 'Secretaria', 'Pastoral do Dízimo']
 </script>
 
 <template>

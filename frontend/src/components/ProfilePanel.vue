@@ -38,7 +38,7 @@ const emit = defineEmits(['save', 'cancel'])
           label="Nível de acesso"
           placeholder="Selecione o nível"
           as="select"
-          :options="['Administrador', 'Secretaria']"
+          :options="['Administrador', 'Secretaria', 'Pastoral do Dízimo']"
           disabled
         />
       </div>
